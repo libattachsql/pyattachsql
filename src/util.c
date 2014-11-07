@@ -17,24 +17,7 @@
 
 #include "module.h"
 
-static PyMethodDef _attachsql_methods[] = {
-  {
-    "get_library_version",
-    (PyCFunction)_attachsql_get_library_version,
-    METH_NOARGS,
-    "get_library_version() -- Returns a string representing the library version."
-  }
-};
-
-PyMODINIT_FUNC
-init_attachsql(void)
+PyObject *_attachsql_get_library_version(PyObject *self, PyObject *unused)
 {
-  PyObject *module;
-
-  module = Py_InitModule3("_attachsql", _attachsql_methods, "a wrapper for the libAttachSQL C API");
-  if (!module)
-  {
-    return;
-  }
-  /* TODO: add types */
+  return PyString_FromString(attachsql_get_library_version());
 }

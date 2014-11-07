@@ -18,4 +18,7 @@
 #pragma once
 
 #include <Python.h>
-#include <libattachsql-1.0/libattachsql.h>
+#include <libattachsql-1.0/attachsql.h>
+
+
+PyObject *_attachsql_get_library_version(PyObject *self, PyObject *unused);
