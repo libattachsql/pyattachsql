@@ -13,8 +13,8 @@
 # under the License.
 
 import unittest
-import _attachsql
+import attachsql
 
 class VersionTest(unittest.TestCase):
     def test_version(self):
-        self.assertEqual(len(_attachsql.get_library_version()), 5)
+        self.assertEqual(len(attachsql.get_library_version()), 5)

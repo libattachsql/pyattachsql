@@ -27,11 +27,11 @@ static PyMethodDef _attachsql_methods[] = {
 };
 
 PyMODINIT_FUNC
-init_attachsql(void)
+initattachsql(void)
 {
   PyObject *module;
 
-  module = Py_InitModule3("_attachsql", _attachsql_methods, "a wrapper for the libAttachSQL C API");
+  module = Py_InitModule3("attachsql", _attachsql_methods, "a wrapper for the libAttachSQL C API");
   if (!module)
   {
     return;

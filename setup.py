@@ -15,7 +15,7 @@ setup(
     version=__version__,
     author="Andrew Hutchings <andrew@linuxjedi.co.uk>",
     ext_modules=[
-                Extension("_attachsql",
+                Extension("attachsql",
                     sources=['src/module.c',
                              'src/util.c'
                             ],
