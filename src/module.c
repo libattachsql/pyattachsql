@@ -23,8 +23,43 @@ static PyMethodDef _attachsql_methods[] = {
     (PyCFunction)_attachsql_get_library_version,
     METH_NOARGS,
     "get_library_version() -- Returns a string representing the library version."
-  }
+  },
+  {NULL}
 };
+
+PyObject *_attachsql_Exception(attachsql_error_t *error)
+{
+  PyObject *tuple, *err;
+  int err_code;
+  if (!(tuple= PyTuple_New(2)))
+  {
+    return NULL;
+  }
+  if (!error)
+  {
+    err= _attachsql_InternalError;
+    PyTuple_SET_ITEM(tuple, 0, PyInt_FromLong(-1L));
+    PyTuple_SET_ITEM(tuple, 1, PyString_FromString("Unknown Error"));
+    PyErr_SetObject(err, tuple);
+    Py_DECREF(tuple);
+    return NULL;
+  }
+  err_code= attachsql_error_code(error);
+  if (err_code >= 2000)
+  {
+    err= _attachsql_ClientError;
+  }
+  else
+  {
+    err= _attachsql_ServerError;
+  }
+  PyTuple_SET_ITEM(tuple, 0, PyInt_FromLong(err_code));
+  PyTuple_SET_ITEM(tuple, 1, PyString_FromString(attachsql_error_message(error)));
+  PyErr_SetObject(err, tuple);
+  Py_DECREF(tuple);
+  attachsql_error_free(error);
+  return NULL;
+}
 
 PyMODINIT_FUNC
 initattachsql(void)
@@ -37,4 +72,19 @@ initattachsql(void)
     return;
   }
   /* TODO: add types */
+  _attachsql_Error= PyErr_NewException("attachsql.Error", NULL, NULL);
+  Py_INCREF(_attachsql_Error);
+  PyModule_AddObject(module, "Error", _attachsql_Error);
+
+  _attachsql_InternalError= PyErr_NewException("attachsql.InternalError", NULL, NULL);
+  Py_INCREF(_attachsql_InternalError);
+  PyModule_AddObject(module, "InternalError", _attachsql_InternalError);
+
+  _attachsql_ClientError= PyErr_NewException("attachsql.ClientError", NULL, NULL);
+  Py_INCREF(_attachsql_ClientError);
+  PyModule_AddObject(module, "ClientError", _attachsql_ClientError);
+
+  _attachsql_ServerError= PyErr_NewException("attachsql.ServerError", NULL, NULL);
+  Py_INCREF(_attachsql_ServerError);
+  PyModule_AddObject(module, "ServerError", _attachsql_ServerError);
 }
