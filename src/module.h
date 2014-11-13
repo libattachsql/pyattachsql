@@ -26,12 +26,16 @@ typedef struct
   attachsql_connect_t *conn;
 } _attachsql_ConnectionObject;
 
+PyTypeObject _attachsql_ConnectionObject_Type;
+
 PyObject *_attachsql_get_library_version(PyObject *self, PyObject *unused);
 
 PyObject *_attachsql_Error;
   PyObject *_attachsql_InternalError;
   PyObject *_attachsql_ClientError;
   PyObject *_attachsql_ServerError;
+
+PyObject *_attachsql_connect(PyObject *self, PyObject *args, PyObject *kwargs);
 
 int _attachsql_ConnectionObject_Initialize(_attachsql_ConnectionObject *self, PyObject *args, PyObject *kwargs);
 

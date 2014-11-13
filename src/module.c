@@ -19,6 +19,12 @@
 
 static PyMethodDef _attachsql_methods[] = {
   {
+    "connect",
+    (PyCFunction)_attachsql_connect,
+    METH_VARARGS | METH_KEYWORDS,
+    "connect to a MySQL server"
+  },
+  {
     "get_library_version",
     (PyCFunction)_attachsql_get_library_version,
     METH_NOARGS,
@@ -61,17 +67,57 @@ PyObject *_attachsql_Exception(attachsql_error_t *error)
   return NULL;
 }
 
+PyObject *_attachsql_connect(PyObject *self, PyObject *args, PyObject *kwargs)
+{
+  _attachsql_ConnectionObject *con= NULL;
+
+  con= (_attachsql_ConnectionObject*) _attachsql_ConnectionObject_Type.tp_alloc(&_attachsql_ConnectionObject_Type, 0);
+  if (con == NULL)
+  {
+    return NULL;
+  }
+  if (_attachsql_ConnectionObject_Initialize(con, args, kwargs))
+  {
+    Py_DECREF(con);
+    con= NULL;
+  }
+  return (PyObject *) con;
+}
+
 PyMODINIT_FUNC
 initattachsql(void)
 {
-  PyObject *module;
+  PyObject *module, *dict;
 
   module = Py_InitModule3("attachsql", _attachsql_methods, "a wrapper for the libAttachSQL C API");
   if (!module)
   {
     return;
   }
-  /* TODO: add types */
+  _attachsql_ConnectionObject_Type.ob_type= &PyType_Type;
+  _attachsql_ConnectionObject_Type.tp_alloc= PyType_GenericAlloc;
+  _attachsql_ConnectionObject_Type.tp_new= PyType_GenericNew;
+  _attachsql_ConnectionObject_Type.tp_free= PyObject_GC_Del;
+
+  if (!(dict = PyModule_GetDict(module)))
+  {
+    if (PyErr_Occurred())
+    {
+      PyErr_SetString(PyExc_ImportError, "attachsql: init failed");
+      return;
+    }
+  }
+
+  if (PyDict_SetItemString(dict, "connection", (PyObject*)&_attachsql_ConnectionObject_Type))
+  {
+    if (PyErr_Occurred())
+    {
+      PyErr_SetString(PyExc_ImportError, "attachsql: init failed");
+      return;
+    }
+    Py_INCREF(&_attachsql_ConnectionObject_Type);
+  }
+
   _attachsql_Error= PyErr_NewException("attachsql.Error", NULL, NULL);
   Py_INCREF(_attachsql_Error);
   PyModule_AddObject(module, "Error", _attachsql_Error);
