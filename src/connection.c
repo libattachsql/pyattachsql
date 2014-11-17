@@ -161,7 +161,7 @@ int _attachsql_ConnectionObject_setattr(_attachsql_ConnectionObject *self, char 
 PyObject *_attachsql_ConnectionObject_repr(_attachsql_ConnectionObject *self)
 {
   char buffer[300];
-  snprintf(buffer, 300, "<attachsql.connection to '%.256s' port %d at %lx>", self->host, self->port, (long)self));
+  snprintf(buffer, 300, "<attachsql.connection to '%.256s' port %d at %lx>", self->host, self->port, (long)self);
   return PyString_FromString(buffer);
 }
 
