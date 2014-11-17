@@ -18,28 +18,6 @@
 #pragma once
 
 #include <Python.h>
-#include <libattachsql-1.0/attachsql.h>
+#include "module.h"
 
-#define MAX_OPTION_SIZE 60
-
-typedef struct
-{
-  PyObject_HEAD
-  attachsql_connect_t *conn;
-  char host[MAX_OPTION_SIZE];
-  in_port_t port;
-  char user[MAX_OPTION_SIZE];
-  char pass[MAX_OPTION_SIZE];
-  char db[MAX_OPTION_SIZE];
-} _attachsql_ConnectionObject;
-
-PyTypeObject _attachsql_ConnectionObject_Type;
-
-PyObject *_attachsql_get_library_version(PyObject *self, PyObject *unused);
-
-PyObject *_attachsql_Error;
-  PyObject *_attachsql_InternalError;
-  PyObject *_attachsql_ClientError;
-  PyObject *_attachsql_ServerError;
-
-PyObject *_attachsql_connect(PyObject *self, PyObject *args, PyObject *kwargs);
+PyObject *_attachsql_ConnectionObject_query(_attachsql_ConnectionObject *self, PyObject *args);

@@ -18,7 +18,8 @@ setup(
                 Extension("attachsql",
                     sources=['src/module.c',
                              'src/connection.c',
-                             'src/util.c'
+                             'src/util.c',
+                             'src/query.c'
                             ],
                     libraries=['attachsql']),
                 ]

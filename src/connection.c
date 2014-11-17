@@ -15,7 +15,8 @@
  *
  */
 
-#include "module.h"
+#include "connection.h"
+#include "query.h"
 
 static PyMethodDef _attachsql_ConnectionObject_methods[]= {
   {
@@ -35,6 +36,18 @@ static PyMethodDef _attachsql_ConnectionObject_methods[]= {
     (PyCFunction)_attachsql_ConnectionObject_poll,
     METH_NOARGS,
     "Poll a connection"
+  },
+  {
+    "get_server_version",
+    (PyCFunction)_attachsql_ConnectionObject_get_server_version,
+    METH_NOARGS,
+    "Return server version"
+  },
+  {
+    "query",
+    (PyCFunction)_attachsql_ConnectionObject_query,
+    METH_VARARGS,
+    "Send a query to the server"
   },
   {NULL, NULL}
 };
@@ -112,6 +125,15 @@ PyObject *_attachsql_ConnectionObject_poll(_attachsql_ConnectionObject *self, Py
     return NULL;
   }
   return PyInt_FromLong((long)ret);
+}
+
+PyObject *_attachsql_ConnectionObject_get_server_version(_attachsql_ConnectionObject *self, PyObject *unused)
+{
+  const char *version;
+  Py_BEGIN_ALLOW_THREADS
+  version= attachsql_connect_get_server_version(self->conn);
+  Py_END_ALLOW_THREADS
+  return PyString_FromString(version);
 }
 
 void _attachsql_ConnectionObject_dealloc(_attachsql_ConnectionObject *self)

@@ -6,3 +6,5 @@ include README.md
 include setup.py
 include tox.ini
 include src/module.h
+include src/connection.h
+include src/query.h
