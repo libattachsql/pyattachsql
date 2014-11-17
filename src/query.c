@@ -128,3 +128,50 @@ PyObject *_attachsql_ConnectionObject_query(_attachsql_ConnectionObject *self, P
   }
   return PyBool_FromLong((long)ret);
 }
+
+PyObject *_attachsql_ConnectionObject_query_close(_attachsql_ConnectionObject *self, PyObject *unused)
+{
+  attachsql_query_close(self->conn);
+  Py_RETURN_NONE;
+}
+
+PyObject *_attachsql_ConnectionObject_query_column_count(_attachsql_ConnectionObject *self, PyObject *unused)
+{
+  uint16_t count;
+  count= attachsql_query_column_count(self->conn);
+  return PyInt_FromLong((long) count);
+}
+
+PyObject *_attachsql_ConnectionObject_query_row_get(_attachsql_ConnectionObject *self, PyObject *unused)
+{
+  attachsql_error_t *error= NULL;
+  attachsql_query_row_st *row;
+  uint16_t column_count;
+  uint16_t column;
+  PyObject *py_row= NULL;
+  PyObject *data= NULL;
+
+  column_count= attachsql_query_column_count(self->conn);
+  if (!column_count)
+  {
+    Py_RETURN_NONE;
+  }
+  row= attachsql_query_row_get(self->conn, &error);
+  if (error)
+  {
+    _attachsql_Exception(error);
+    return NULL;
+  }
+  py_row= PyTuple_New(column_count);
+  if (!py_row)
+  {
+    return NULL;
+  }
+
+  for (column= 0; column < column_count; column++)
+  {
+    data= PyString_FromStringAndSize(row[column].data, row[column].length);
+    PyTuple_SET_ITEM(py_row, column, data);
+  }
+  return py_row;
+}

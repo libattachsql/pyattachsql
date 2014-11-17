@@ -49,6 +49,24 @@ static PyMethodDef _attachsql_ConnectionObject_methods[]= {
     METH_VARARGS,
     "Send a query to the server"
   },
+  {
+    "query_close",
+    (PyCFunction)_attachsql_ConnectionObject_query_close,
+    METH_NOARGS,
+    "Close a query"
+  },
+  {
+    "query_column_count",
+    (PyCFunction)_attachsql_ConnectionObject_query_column_count,
+    METH_NOARGS,
+    "Get the column count for a query"
+  },
+  {
+    "query_row_get",
+    (PyCFunction)_attachsql_ConnectionObject_query_row_get,
+    METH_NOARGS,
+    "Get the current row"
+  },
   {NULL, NULL}
 };
 

@@ -34,4 +34,8 @@ class QueryTest(unittest.TestCase):
                 ret=con.poll()
         except attachsql.ClientError:
             raise unittest.SkipTest("No MySQL server found")
+        self.assertEqual(con.query_column_count(), 2)
+        row = con.query_row_get()
+        self.assertEqual(row[0], "hello")
+        self.assertEqual(row[1], "123456")
 

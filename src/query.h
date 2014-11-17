@@ -21,3 +21,9 @@
 #include "module.h"
 
 PyObject *_attachsql_ConnectionObject_query(_attachsql_ConnectionObject *self, PyObject *args);
+
+PyObject *_attachsql_ConnectionObject_query_close(_attachsql_ConnectionObject *self, PyObject *unused);
+
+PyObject *_attachsql_ConnectionObject_query_column_count(_attachsql_ConnectionObject *self, PyObject *unused);
+
+PyObject *_attachsql_ConnectionObject_query_row_get(_attachsql_ConnectionObject *self, PyObject *unused);
