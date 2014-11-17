@@ -25,12 +25,14 @@ PyObject *_attachsql_ConnectionObject_query(_attachsql_ConnectionObject *self, P
   int param_count= 0;
   int i;
   int64_t tmp_int;
+  uint64_t tmp_uint;
   double tmp_double;
   attachsql_query_parameter_st *asql_params= NULL;
   PyObject *param_list= NULL;
   PyObject *param_dict= NULL;
   PyObject *type= NULL;
   PyObject *value= NULL;
+  PyObject *is_unsigned= NULL;
   attachsql_error_t *error= NULL;
   if (!PyArg_ParseTuple(args, "s#|O!", &query, &query_length, &PyList_Type, &param_list))
   {
@@ -64,6 +66,7 @@ PyObject *_attachsql_ConnectionObject_query(_attachsql_ConnectionObject *self, P
     }
     type= PyDict_GetItemString(param_dict, "type");
     value= PyDict_GetItemString(param_dict, "data");
+    is_unsigned= PyDict_GetItemString(param_dict, "is_unsigned");
     if (!type || !value || !PyInt_Check(type))
     {
       PyErr_SetString(PyExc_TypeError, "Bad type or value in dict");
@@ -82,12 +85,32 @@ PyObject *_attachsql_ConnectionObject_query(_attachsql_ConnectionObject *self, P
         asql_params[i].length= PyString_Size(value);
         break;
       case ATTACHSQL_ESCAPE_TYPE_INT:
-        tmp_int= PyInt_AsLong(value);
-        asql_params[i].data= &tmp_int;
+        if (!is_unsigned && !PyInt_AsLong(is_unsigned))
+        {
+          tmp_int= PyLong_AsLong(value);
+          asql_params[i].data= &tmp_int;
+          asql_params[i].is_unsigned= false;
+        }
+        else
+        {
+          tmp_uint= PyLong_AsUnsignedLong(value);
+          asql_params[i].data= &tmp_uint;
+          asql_params[i].is_unsigned= true;
+        }
         break;
       case ATTACHSQL_ESCAPE_TYPE_BIGINT:
-        tmp_int= PyLong_AsLongLong(value);
-        asql_params[i].data= &tmp_int;
+        if (!is_unsigned && !PyInt_AsLong(is_unsigned))
+        {
+          tmp_int= PyLong_AsLongLong(value);
+          asql_params[i].data= &tmp_int;
+          asql_params[i].is_unsigned= false;
+        }
+        else
+        {
+          tmp_uint= PyLong_AsUnsignedLongLong(value);
+          asql_params[i].data= &tmp_uint;
+          asql_params[i].is_unsigned= true;
+        }
         break;
       case ATTACHSQL_ESCAPE_TYPE_FLOAT:
       case ATTACHSQL_ESCAPE_TYPE_DOUBLE:
