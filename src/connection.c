@@ -67,6 +67,18 @@ static PyMethodDef _attachsql_ConnectionObject_methods[]= {
     METH_NOARGS,
     "Get the current row"
   },
+  {
+    "query_row_next",
+    (PyCFunction)_attachsql_ConnectionObject_query_row_next,
+    METH_NOARGS,
+    "Start retrieving the next row"
+  },
+  {
+    "insert_id",
+    (PyCFunction)_attachsql_ConnectionObject_last_insert_id,
+    METH_NOARGS,
+    "Get the last insert id for the connection"
+  },
   {NULL, NULL}
 };
 

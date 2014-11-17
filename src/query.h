@@ -27,3 +27,7 @@ PyObject *_attachsql_ConnectionObject_query_close(_attachsql_ConnectionObject *s
 PyObject *_attachsql_ConnectionObject_query_column_count(_attachsql_ConnectionObject *self, PyObject *unused);
 
 PyObject *_attachsql_ConnectionObject_query_row_get(_attachsql_ConnectionObject *self, PyObject *unused);
+
+PyObject *_attachsql_ConnectionObject_query_row_next(_attachsql_ConnectionObject *self, PyObject *unused);
+
+PyObject *_attachsql_ConnectionObject_last_insert_id(_attachsql_ConnectionObject *self, PyObject *unused);

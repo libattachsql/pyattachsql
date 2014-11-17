@@ -175,3 +175,18 @@ PyObject *_attachsql_ConnectionObject_query_row_get(_attachsql_ConnectionObject 
   }
   return py_row;
 }
+
+PyObject *_attachsql_ConnectionObject_query_row_next(_attachsql_ConnectionObject *self, PyObject *unused)
+{
+  attachsql_query_row_next(self->conn);
+  Py_RETURN_NONE;
+}
+
+PyObject *_attachsql_ConnectionObject_last_insert_id(_attachsql_ConnectionObject *self, PyObject *unused)
+{
+  uint64_t insert_id;
+
+  insert_id= attachsql_connection_last_insert_id(self->conn);
+
+  return PyLong_FromUnsignedLongLong(insert_id);
+}
