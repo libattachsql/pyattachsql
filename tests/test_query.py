@@ -28,7 +28,7 @@ class QueryTest(unittest.TestCase):
     def test_escape_query(self):
         ret = 0
         con = attachsql.connect("localhost", "test", "test", "test", 3306)
-        con.query("SELECT ? as a, ? as b", [{'type': 1, 'data':'hello'}, {'type': 3, 'data': 123456}])
+        con.query("SELECT ? as a, ? as b", [{'type': attachsql.ESCAPE_TYPE_CHAR, 'data':'hello'}, {'type': attachsql.ESCAPE_TYPE_INT, 'data': 123456}])
         try:
             while ret != attachsql.RETURN_ROW_READY:
                 ret=con.poll()

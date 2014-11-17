@@ -86,7 +86,7 @@ PyObject *_attachsql_ConnectionObject_query(_attachsql_ConnectionObject *self, P
         asql_params[i].data= &tmp_int;
         break;
       case ATTACHSQL_ESCAPE_TYPE_BIGINT:
-        tmp_int= PyLong_AsLong(value);
+        tmp_int= PyLong_AsLongLong(value);
         asql_params[i].data= &tmp_int;
         break;
       case ATTACHSQL_ESCAPE_TYPE_FLOAT:

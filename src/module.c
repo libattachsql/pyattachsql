@@ -141,4 +141,11 @@ initattachsql(void)
   PyModule_AddIntConstant(module, "RETURN_ROW_READY", ATTACHSQL_RETURN_ROW_READY);
   PyModule_AddIntConstant(module, "RETURN_ERROR", ATTACHSQL_RETURN_ERROR);
   PyModule_AddIntConstant(module, "RETURN_EOF", ATTACHSQL_RETURN_EOF);
+  PyModule_AddIntConstant(module, "ESCAPE_TYPE_NONE", ATTACHSQL_ESCAPE_TYPE_NONE);
+  PyModule_AddIntConstant(module, "ESCAPE_TYPE_CHAR", ATTACHSQL_ESCAPE_TYPE_CHAR);
+  PyModule_AddIntConstant(module, "ESCAPE_TYPE_CHAR_LIKE", ATTACHSQL_ESCAPE_TYPE_CHAR_LIKE);
+  PyModule_AddIntConstant(module, "ESCAPE_TYPE_INT", ATTACHSQL_ESCAPE_TYPE_INT);
+  PyModule_AddIntConstant(module, "ESCAPE_TYPE_BIGINT", ATTACHSQL_ESCAPE_TYPE_BIGINT);
+  PyModule_AddIntConstant(module, "ESCAPE_TYPE_FLOAT", ATTACHSQL_ESCAPE_TYPE_FLOAT);
+  PyModule_AddIntConstant(module, "ESCAPE_TYPE_DOUBLE", ATTACHSQL_ESCAPE_TYPE_DOUBLE);
 }
