@@ -133,4 +133,12 @@ initattachsql(void)
   _attachsql_ServerError= PyErr_NewException("attachsql.ServerError", NULL, NULL);
   Py_INCREF(_attachsql_ServerError);
   PyModule_AddObject(module, "ServerError", _attachsql_ServerError);
+
+  PyModule_AddIntConstant(module, "RETURN_NONE", ATTACHSQL_RETURN_NONE);
+  PyModule_AddIntConstant(module, "RETURN_NOT_CONNECTED", ATTACHSQL_RETURN_NOT_CONNECTED);
+  PyModule_AddIntConstant(module, "RETURN_IDLE", ATTACHSQL_RETURN_IDLE);
+  PyModule_AddIntConstant(module, "RETURN_PROCESSING", ATTACHSQL_RETURN_PROCESSING);
+  PyModule_AddIntConstant(module, "RETURN_ROW_READY", ATTACHSQL_RETURN_ROW_READY);
+  PyModule_AddIntConstant(module, "RETURN_ERROR", ATTACHSQL_RETURN_ERROR);
+  PyModule_AddIntConstant(module, "RETURN_EOF", ATTACHSQL_RETURN_EOF);
 }

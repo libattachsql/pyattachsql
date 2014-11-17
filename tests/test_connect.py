@@ -17,5 +17,13 @@ import attachsql
 
 class ConnectTest(unittest.TestCase):
     def test_connect(self):
-        con = attachsql.connect("localhost", "test", "test", "test", 3306);
-        self.assertEqual(con.connection_id(), 0);
+        ret = 0
+        con = attachsql.connect("localhost", "test", "test", "test", 3306)
+        self.assertEqual(con.connection_id(), 0)
+        con.connect()
+        try:
+            while ret != attachsql.RETURN_IDLE:
+                ret=con.poll()
+        except attachsql.ClientError:
+            raise unittest.SkipTest("No MySQL server found")
+        self.assertNotEqual(con.connection_id(), 0)

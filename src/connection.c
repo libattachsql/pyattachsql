@@ -24,6 +24,18 @@ static PyMethodDef _attachsql_ConnectionObject_methods[]= {
     METH_NOARGS,
     "Gets the current connection ID"
   },
+  {
+    "connect",
+    (PyCFunction)_attachsql_ConnectionObject_connect,
+    METH_NOARGS,
+    "Explicitly connect to a server"
+  },
+  {
+    "poll",
+    (PyCFunction)_attachsql_ConnectionObject_poll,
+    METH_NOARGS,
+    "Poll a connection"
+  },
   {NULL, NULL}
 };
 
@@ -35,19 +47,25 @@ static struct PyMemberDef _attachsql_ConnectionObject_memberlist[]= {
 
 int _attachsql_ConnectionObject_Initialize(_attachsql_ConnectionObject *self, PyObject *args, PyObject *kwargs)
 {
-  char *host= NULL, *user= NULL, *pass= NULL, *db= NULL;
-  in_port_t port;
+  char *user= NULL, *hn= NULL, *pass= NULL, *db= NULL;
+  unsigned int port;
   static char *kwlist[]= {"host", "user", "pass", "db", "port", NULL};
   attachsql_error_t *error= NULL;
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|ssssi:connect",
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ssssI",
         kwlist,
-        &host, &user, &pass, &db, &port
+        &hn, &user, &pass, &db, &port
         ))
   {
     return -1;
   }
-  self->conn= attachsql_connect_create(host, port, user, pass, db, &error);
+  strncpy(self->host, hn, MAX_OPTION_SIZE);
+  self->port= port;
+  strncpy(self->user, user, MAX_OPTION_SIZE);
+  strncpy(self->pass, pass, MAX_OPTION_SIZE);
+  strncpy(self->db, db, MAX_OPTION_SIZE);
+
+  self->conn= attachsql_connect_create(self->host, self->port, self->user, self->pass, self->db, &error);
   if (!self->conn)
   {
     _attachsql_Exception(error);
@@ -64,6 +82,36 @@ PyObject *_attachsql_ConnectionObject_connection_id(_attachsql_ConnectionObject 
   conn_id= attachsql_connect_get_connection_id(self->conn);
   Py_END_ALLOW_THREADS
   return PyInt_FromLong((long)conn_id);
+}
+
+PyObject *_attachsql_ConnectionObject_connect(_attachsql_ConnectionObject *self, PyObject *unused)
+{
+  bool status;
+  attachsql_error_t *error= NULL;
+  Py_BEGIN_ALLOW_THREADS
+  status= attachsql_connect(self->conn, &error);
+  Py_END_ALLOW_THREADS
+  if (error)
+  {
+    _attachsql_Exception(error);
+    return NULL;
+  }
+  return PyBool_FromLong((long)status);
+}
+
+PyObject *_attachsql_ConnectionObject_poll(_attachsql_ConnectionObject *self, PyObject *unused)
+{
+  attachsql_return_t ret;
+  attachsql_error_t *error= NULL;
+  Py_BEGIN_ALLOW_THREADS
+  ret= attachsql_connect_poll(self->conn, &error);
+  Py_END_ALLOW_THREADS
+  if (error)
+  {
+    _attachsql_Exception(error);
+    return NULL;
+  }
+  return PyInt_FromLong((long)ret);
 }
 
 void _attachsql_ConnectionObject_dealloc(_attachsql_ConnectionObject *self)
