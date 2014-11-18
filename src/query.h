@@ -31,3 +31,19 @@ PyObject *_attachsql_ConnectionObject_query_row_get(_attachsql_ConnectionObject 
 PyObject *_attachsql_ConnectionObject_query_row_next(_attachsql_ConnectionObject *self, PyObject *unused);
 
 PyObject *_attachsql_ConnectionObject_last_insert_id(_attachsql_ConnectionObject *self, PyObject *unused);
+
+PyObject *_attachsql_ConnectionObject_affected_rows(_attachsql_ConnectionObject *self, PyObject *unused);
+
+PyObject *_attachsql_ConnectionObject_warning_count(_attachsql_ConnectionObject *self, PyObject *unused);
+
+PyObject *_attachsql_ConnectionObject_query_info(_attachsql_ConnectionObject *self, PyObject *unused);
+
+PyObject *_attachsql_ConnectionObject_query_row_count(_attachsql_ConnectionObject *self, PyObject *unused);
+
+PyObject *_attachsql_ConnectionObject_query_next_result(_attachsql_ConnectionObject *self, PyObject *unused);
+
+PyObject *_attachsql_ConnectionObject_query_buffer_rows(_attachsql_ConnectionObject *self, PyObject *unused);
+
+PyObject *_attachsql_ConnectionObject_query_buffer_row_get(_attachsql_ConnectionObject *self, PyObject *unused);
+
+PyObject *_attachsql_ConnectionObject_query_row_get_offset(_attachsql_ConnectionObject *self, PyObject *args);

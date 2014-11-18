@@ -79,6 +79,54 @@ static PyMethodDef _attachsql_ConnectionObject_methods[]= {
     METH_NOARGS,
     "Get the last insert id for the connection"
   },
+  {
+    "affected_rows",
+    (PyCFunction)_attachsql_ConnectionObject_affected_rows,
+    METH_NOARGS,
+    "Get the number of affected rows"
+  },
+  {
+    "warning_count",
+    (PyCFunction)_attachsql_ConnectionObject_warning_count,
+    METH_NOARGS,
+    "Get the number of warnings"
+  },
+  {
+    "query_info",
+    (PyCFunction)_attachsql_ConnectionObject_query_info,
+    METH_NOARGS,
+    "Get the query info"
+  },
+  {
+    "query_row_count",
+    (PyCFunction)_attachsql_ConnectionObject_query_row_count,
+    METH_NOARGS,
+    "Get the row count for a buffered query"
+  },
+  {
+    "query_next_result",
+    (PyCFunction)_attachsql_ConnectionObject_query_next_result,
+    METH_NOARGS,
+    "Start retrieving the next result set"
+  },
+  {
+    "query_buffer_rows",
+    (PyCFunction)_attachsql_ConnectionObject_query_buffer_rows,
+    METH_NOARGS,
+    "Enable the buffering of query results"
+  },
+  {
+    "query_buffer_row_get",
+    (PyCFunction)_attachsql_ConnectionObject_query_buffer_row_get,
+    METH_NOARGS,
+    "Get the next row in a buffered result set"
+  },
+  {
+    "query_row_get_offset",
+    (PyCFunction)_attachsql_ConnectionObject_query_row_get_offset,
+    METH_VARARGS,
+    "Get a specified row from a buffered result set"
+  },
   {NULL, NULL}
 };
 

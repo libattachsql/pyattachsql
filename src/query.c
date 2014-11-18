@@ -162,6 +162,10 @@ PyObject *_attachsql_ConnectionObject_query_row_get(_attachsql_ConnectionObject 
     _attachsql_Exception(error);
     return NULL;
   }
+  if (!row)
+  {
+    Py_RETURN_NONE;
+  }
   py_row= PyTuple_New(column_count);
   if (!py_row)
   {
@@ -190,3 +194,148 @@ PyObject *_attachsql_ConnectionObject_last_insert_id(_attachsql_ConnectionObject
 
   return PyLong_FromUnsignedLongLong(insert_id);
 }
+
+PyObject *_attachsql_ConnectionObject_affected_rows(_attachsql_ConnectionObject *self, PyObject *unused)
+{
+  uint64_t affected_rows;
+
+  affected_rows= attachsql_query_affected_rows(self->conn);
+
+  return PyLong_FromUnsignedLongLong(affected_rows);
+}
+
+PyObject *_attachsql_ConnectionObject_warning_count(_attachsql_ConnectionObject *self, PyObject *unused)
+{
+  uint32_t warning_count;
+
+  warning_count= attachsql_query_warning_count(self->conn);
+
+  return PyLong_FromUnsignedLong(warning_count);
+}
+
+PyObject *_attachsql_ConnectionObject_query_info(_attachsql_ConnectionObject *self, PyObject *unused)
+{
+  const char *query_info;
+
+  query_info= attachsql_query_info(self->conn);
+
+  return PyString_FromString(query_info);
+}
+
+PyObject *_attachsql_ConnectionObject_query_row_count(_attachsql_ConnectionObject *self, PyObject *unused)
+{
+  uint64_t row_count;
+
+  row_count= attachsql_query_row_count(self->conn);
+
+  return PyLong_FromUnsignedLongLong(row_count);
+}
+
+PyObject *_attachsql_ConnectionObject_query_next_result(_attachsql_ConnectionObject *self, PyObject *unused)
+{
+  attachsql_return_t ret;
+
+  ret= attachsql_query_next_result(self->conn);
+
+  return PyInt_FromLong((long)ret);
+}
+
+PyObject *_attachsql_ConnectionObject_query_buffer_rows(_attachsql_ConnectionObject *self, PyObject *unused)
+{
+  bool success;
+  PyObject *tuple;
+
+  if (!(tuple= PyTuple_New(2)))
+  {
+    return NULL;
+  }
+
+  success= attachsql_query_buffer_rows(self->conn, true);
+
+  if (!success)
+  {
+    PyTuple_SET_ITEM(tuple, 0, PyInt_FromLong(-1L));
+    PyTuple_SET_ITEM(tuple, 1, PyString_FromString("Cannot set buffered rows at this stage"));
+    PyErr_SetObject(_attachsql_ClientError, tuple);
+    Py_DECREF(tuple);
+    return NULL;
+  }
+
+  Py_RETURN_TRUE;
+}
+
+PyObject *_attachsql_ConnectionObject_query_buffer_row_get(_attachsql_ConnectionObject *self, PyObject *unused)
+{
+  attachsql_query_row_st *row;
+  uint16_t column_count;
+  uint16_t column;
+  PyObject *py_row= NULL;
+  PyObject *data= NULL;
+
+  column_count= attachsql_query_column_count(self->conn);
+  if (!column_count)
+  {
+    Py_RETURN_NONE;
+  }
+  row= attachsql_query_buffer_row_get(self->conn);
+  if (!row)
+  {
+    Py_RETURN_NONE;
+  }
+  py_row= PyTuple_New(column_count);
+  if (!py_row)
+  {
+    return NULL;
+  }
+
+  for (column= 0; column < column_count; column++)
+  {
+    data= PyString_FromStringAndSize(row[column].data, row[column].length);
+    PyTuple_SET_ITEM(py_row, column, data);
+  }
+  return py_row;
+}
+
+PyObject *_attachsql_ConnectionObject_query_row_get_offset(_attachsql_ConnectionObject *self, PyObject *args)
+{
+  attachsql_query_row_st *row;
+  uint16_t column_count;
+  uint16_t column;
+  uint64_t row_no;
+  PyObject *py_row= NULL;
+  PyObject *data= NULL;
+  PyObject *tuple= NULL;
+
+  if (!PyArg_ParseTuple(args, "K", &row_no))
+  {
+    return NULL;
+  }
+
+  column_count= attachsql_query_column_count(self->conn);
+  if (!column_count)
+  {
+    Py_RETURN_NONE;
+  }
+  row= attachsql_query_row_get_offset(self->conn, row_no);
+  if (!row)
+  {
+    PyTuple_SET_ITEM(tuple, 0, PyInt_FromLong(-1L));
+    PyTuple_SET_ITEM(tuple, 1, PyString_FromString("Row not found"));
+    PyErr_SetObject(_attachsql_ClientError, tuple);
+    Py_DECREF(tuple);
+    return NULL;
+  }
+  py_row= PyTuple_New(column_count);
+  if (!py_row)
+  {
+    return NULL;
+  }
+
+  for (column= 0; column < column_count; column++)
+  {
+    data= PyString_FromStringAndSize(row[column].data, row[column].length);
+    PyTuple_SET_ITEM(py_row, column, data);
+  }
+  return py_row;
+}
+
