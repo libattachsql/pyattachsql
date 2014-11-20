@@ -17,6 +17,9 @@
 
 #include "query.h"
 
+extern PyTypeObject _attachsql_ConnectionObject_Type;
+extern PyObject *_attachsql_ClientError;
+
 PyObject *_attachsql_ConnectionObject_query(_attachsql_ConnectionObject *self, PyObject *args)
 {
   bool ret;

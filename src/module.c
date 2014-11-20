@@ -17,6 +17,12 @@
 
 #include "module.h"
 
+extern PyTypeObject _attachsql_ConnectionObject_Type;
+PyObject *_attachsql_Error;
+  PyObject *_attachsql_InternalError;
+  PyObject *_attachsql_ClientError;
+  PyObject *_attachsql_ServerError;
+
 static PyMethodDef _attachsql_methods[] = {
   {
     "connect",

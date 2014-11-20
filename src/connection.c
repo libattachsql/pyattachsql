@@ -18,6 +18,8 @@
 #include "connection.h"
 #include "query.h"
 
+extern PyObject *_attachsql_ClientError;
+
 static PyMethodDef _attachsql_ConnectionObject_methods[]= {
   {
     "connection_id",

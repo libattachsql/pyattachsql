@@ -33,13 +33,6 @@ typedef struct
   char db[MAX_OPTION_SIZE];
 } _attachsql_ConnectionObject;
 
-PyTypeObject _attachsql_ConnectionObject_Type;
-
 PyObject *_attachsql_get_library_version(PyObject *self, PyObject *unused);
-
-PyObject *_attachsql_Error;
-  PyObject *_attachsql_InternalError;
-  PyObject *_attachsql_ClientError;
-  PyObject *_attachsql_ServerError;
 
 PyObject *_attachsql_connect(PyObject *self, PyObject *args, PyObject *kwargs);
