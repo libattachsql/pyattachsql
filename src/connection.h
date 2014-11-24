@@ -41,3 +41,7 @@ PyObject *_attachsql_ConnectionObject_repr(_attachsql_ConnectionObject *self);
 int _attachsql_ConnectionObject_traverse(_attachsql_ConnectionObject *self, visitproc visit, void *arg);
 
 int _attachsql_ConnectionObject_clear(_attachsql_ConnectionObject *self);
+
+PyObject *_attachsql_ConnectionObject_set_ssl(_attachsql_ConnectionObject *self, PyObject *args);
+
+PyObject *_attachsql_ConnectionObject_set_option(_attachsql_ConnectionObject *self, PyObject *args);

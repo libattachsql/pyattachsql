@@ -36,3 +36,5 @@ typedef struct
 PyObject *_attachsql_get_library_version(PyObject *self, PyObject *unused);
 
 PyObject *_attachsql_connect(PyObject *self, PyObject *args, PyObject *kwargs);
+
+PyObject *_attachsql_Exception(attachsql_error_t *error);
