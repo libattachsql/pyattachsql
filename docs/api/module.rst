@@ -94,3 +94,10 @@ Functions
    :param str database: The default database for the connection
    :param int port: The port to connect on or ``0`` for a Unix Domain Socket connection
    :return: An instance of the :py:class:`connection`
+
+.. py:function:: get_library_version()
+
+   Gets the version of libAttachSQL used for pyAttachSQL
+
+   :return: A string representation of the version number
+   :rtype: str
