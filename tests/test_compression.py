@@ -1,0 +1,45 @@
+# Copyright 2014 Hewlett-Packard Development Company, L.P.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain 
+# a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+import unittest
+import attachsql
+
+class CompressionTest(unittest.TestCase):
+    def test_basic_query(self):
+        ret = 0
+        con = attachsql.connect("localhost", "test", "test", "test", 3306)
+        if not con.set_option(attachsql.OPTION_COMPRESS):
+            raise unittest.SkipTest("Compression not possible")
+        con.query("SHOW PROCESSLIST")
+        try:
+            while ret != attachsql.RETURN_ROW_READY:
+                ret=con.poll()
+        except attachsql.ClientError:
+            raise unittest.SkipTest("No MySQL server found")
+    def test_escape_query(self):
+        ret = 0
+        con = attachsql.connect("localhost", "test", "test", "test", 3306)
+        if not con.set_option(attachsql.OPTION_COMPRESS):
+            raise unittest.SkipTest("Compression not possible")
+        con.query("SELECT ? as a, ? as b", [{'type': attachsql.ESCAPE_TYPE_CHAR, 'data':'hello'}, {'type': attachsql.ESCAPE_TYPE_INT, 'data': 123456}])
+        try:
+            while ret != attachsql.RETURN_ROW_READY:
+                ret=con.poll()
+        except attachsql.ClientError:
+            raise unittest.SkipTest("No MySQL server found")
+        self.assertEqual(con.query_column_count(), 2)
+        row = con.query_row_get()
+        self.assertEqual(row[0], "hello")
+        self.assertEqual(row[1], "123456")
+

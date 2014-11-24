@@ -143,3 +143,25 @@ Connection Class
       :param long offset: The offset row
       :return: The row data
       :rtype: tuple
+
+   .. py:method:: set_ssl(key, cert, ca, capath, cipher, [verify])
+
+      Sets the SSL certifications and enables SSL connections
+
+      :param str key: The path for the key file
+      :param str cert: The path for the certificate
+      :param str ca: The path for the CA
+      :param str capath: The path containing many CAs
+      :param str cipher: A list of ciphers to allow
+      :param bool verify: Set to verify the SSL connection
+      :return: ``True`` on success
+      :rtype: boolean
+
+   .. py:method:: set_option(option, [unused])
+
+      Sets a connection option, the list of possible options can be found in :ref:`option-constants`
+
+      :param int option: The option to set
+      :param unused: This parameter is for future use
+      :return: ``True`` on success
+      :rtype: boolean
