@@ -129,6 +129,18 @@ static PyMethodDef _attachsql_ConnectionObject_methods[]= {
     METH_VARARGS,
     "Get a specified row from a buffered result set"
   },
+  {
+    "set_ssl",
+    (PyCFunction)_attachsql_ConnectionObject_set_ssl,
+    METH_VARARGS,
+    "Set the SSL connection parameters"
+  },
+  {
+    "set_option",
+    (PyCFunction)_attachsql_ConnectionObject_set_option,
+    METH_VARARGS,
+    "Sets connection options"
+  },
   {NULL, NULL}
 };
 
@@ -207,6 +219,43 @@ PyObject *_attachsql_ConnectionObject_poll(_attachsql_ConnectionObject *self, Py
   return PyInt_FromLong((long)ret);
 }
 
+PyObject *_attachsql_ConnectionObject_set_ssl(_attachsql_ConnectionObject *self, PyObject *args)
+{
+  char *key, *cert, *ca, *capath, *cipher;
+  bool verify= false;
+  attachsql_error_t *error= NULL;
+
+  if (!PyArg_ParseTuple(args, "sssss|b", &key, &cert, &ca, &capath, &cipher, &verify))
+  {
+    return NULL;
+  }
+
+  attachsql_connect_set_ssl(self->conn, key, cert, ca, capath, cipher, verify, &error);
+
+  if (error)
+  {
+    _attachsql_Exception(error);
+    return NULL;
+  }
+
+  Py_RETURN_TRUE;
+}
+
+PyObject *_attachsql_ConnectionObject_set_option(_attachsql_ConnectionObject *self, PyObject *args)
+{
+  int option;
+  bool result;
+  PyObject *unused= NULL;
+
+  if (!PyArg_ParseTuple(args, "i|O", &option, &unused))
+  {
+    return NULL;
+  }
+  // At a later date this third parameter should be based on the "unused" parameter
+  result= attachsql_connect_set_option(self->conn, option, NULL);
+  return PyBool_FromLong((long)result);
+}
+
 PyObject *_attachsql_ConnectionObject_get_server_version(_attachsql_ConnectionObject *self, PyObject *unused)
 {
   const char *version;
@@ -226,7 +275,7 @@ void _attachsql_ConnectionObject_dealloc(_attachsql_ConnectionObject *self)
 PyObject *_attachsql_ConnectionObject_getattr(_attachsql_ConnectionObject *self, char *name)
 {
   PyObject *res;
-  struct PyMemberDef *def;
+  //struct PyMemberDef *def;
 
   res= Py_FindMethod(_attachsql_ConnectionObject_methods, (PyObject *)self, name);
   if (res != NULL)
@@ -239,7 +288,7 @@ PyObject *_attachsql_ConnectionObject_getattr(_attachsql_ConnectionObject *self,
 
 int _attachsql_ConnectionObject_setattr(_attachsql_ConnectionObject *self, char *name, PyObject *v)
 {
-  struct PyMemberDef *def;
+  //struct PyMemberDef *def;
 
   if (v == NULL)
   {

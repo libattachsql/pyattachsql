@@ -16,6 +16,7 @@
  */
 
 #include "module.h"
+#include "connection.h"
 
 extern PyTypeObject _attachsql_ConnectionObject_Type;
 PyObject *_attachsql_Error;
@@ -154,4 +155,13 @@ initattachsql(void)
   PyModule_AddIntConstant(module, "ESCAPE_TYPE_BIGINT", ATTACHSQL_ESCAPE_TYPE_BIGINT);
   PyModule_AddIntConstant(module, "ESCAPE_TYPE_FLOAT", ATTACHSQL_ESCAPE_TYPE_FLOAT);
   PyModule_AddIntConstant(module, "ESCAPE_TYPE_DOUBLE", ATTACHSQL_ESCAPE_TYPE_DOUBLE);
+  PyModule_AddIntConstant(module, "OPTION_COMPRESS", ATTACHSQL_OPTION_COMPRESS);
+  PyModule_AddIntConstant(module, "OPTION_FOUND_ROWS", ATTACHSQL_OPTION_FOUND_ROWS);
+  PyModule_AddIntConstant(module, "OPTION_IGNORE_SIGPIPE", ATTACHSQL_OPTION_IGNORE_SIGPIPE);
+  PyModule_AddIntConstant(module, "OPTION_INTERACTIVE", ATTACHSQL_OPTION_INTERACTIVE);
+  PyModule_AddIntConstant(module, "OPTION_LOCAL_FILES", ATTACHSQL_OPTION_LOCAL_FILES);
+  PyModule_AddIntConstant(module, "OPTION_MULTI_STATEMENTS", ATTACHSQL_OPTION_MULTI_STATEMENTS);
+  PyModule_AddIntConstant(module, "OPTION_NO_SCHEMA", ATTACHSQL_OPTION_NO_SCHEMA);
+  PyModule_AddIntConstant(module, "OPTION_SSL_NO_VERIFY", ATTACHSQL_OPTION_SSL_NO_VERIFY);
+  PyModule_AddIntConstant(module, "OPTION_SEMI_BLOCKING", ATTACHSQL_OPTION_SEMI_BLOCKING);
 }

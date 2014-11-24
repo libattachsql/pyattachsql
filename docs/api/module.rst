@@ -83,6 +83,47 @@ Escape Constants
 
    Insert double data into the query
 
+.. _option-constants:
+
+Option Constants
+^^^^^^^^^^^^^^^^
+
+.. py:data:: OPTION_COMPRESS
+
+   Protocol compression option
+
+.. py:data:: OPTION_FOUND_ROWS
+
+   Found rows counter for results
+
+.. py:data:: OPTION_IGNORE_SIGPIPE
+
+   Ignore sigpipe (not used, sigpipe is ignored anyway)
+
+.. py:data:: OPTION_INTERACTIVE
+
+   Client is interactive
+
+.. py:data:: OPTION_LOCAL_FILES
+
+   Enable ``LOAD LOCAL INFILE``
+
+.. py:data:: OPTION_MULTI_STATEMENTS
+
+   Enable multi-statement queries
+
+.. py:data:: OPTION_NO_SCHEMA
+
+   Disable the ``schema_name.table_name.column_name`` syntax (for ODBC)
+
+.. py:data:: OPTION_SSL_NO_VERIFY
+
+   Currently unused
+
+.. py:data:: OPTION_SEMI_BLOCKING
+
+   Enable semi-blocking mode
+
 Functions
 ---------
 
