@@ -17,8 +17,11 @@
 
 #include "module.h"
 #include "connection.h"
+#include <datetime.h>
 
 extern PyTypeObject _attachsql_ConnectionObject_Type;
+extern PyTypeObject _attachsql_StatementObject_Type;
+
 PyObject *_attachsql_Error;
   PyObject *_attachsql_InternalError;
   PyObject *_attachsql_ClientError;
@@ -106,6 +109,11 @@ initattachsql(void)
   _attachsql_ConnectionObject_Type.tp_new= PyType_GenericNew;
   _attachsql_ConnectionObject_Type.tp_free= PyObject_GC_Del;
 
+  _attachsql_StatementObject_Type.ob_type= &PyType_Type;
+  _attachsql_StatementObject_Type.tp_alloc= PyType_GenericAlloc;
+  _attachsql_StatementObject_Type.tp_new= PyType_GenericNew;
+  _attachsql_StatementObject_Type.tp_free= PyObject_GC_Del;
+
   if (!(dict = PyModule_GetDict(module)))
   {
     if (PyErr_Occurred())
@@ -141,6 +149,8 @@ initattachsql(void)
   Py_INCREF(_attachsql_ServerError);
   PyModule_AddObject(module, "ServerError", _attachsql_ServerError);
 
+  PyDateTime_IMPORT;
+
   PyModule_AddIntConstant(module, "RETURN_NONE", ATTACHSQL_RETURN_NONE);
   PyModule_AddIntConstant(module, "RETURN_NOT_CONNECTED", ATTACHSQL_RETURN_NOT_CONNECTED);
   PyModule_AddIntConstant(module, "RETURN_IDLE", ATTACHSQL_RETURN_IDLE);
@@ -164,4 +174,5 @@ initattachsql(void)
   PyModule_AddIntConstant(module, "OPTION_NO_SCHEMA", ATTACHSQL_OPTION_NO_SCHEMA);
   PyModule_AddIntConstant(module, "OPTION_SSL_NO_VERIFY", ATTACHSQL_OPTION_SSL_NO_VERIFY);
   PyModule_AddIntConstant(module, "OPTION_SEMI_BLOCKING", ATTACHSQL_OPTION_SEMI_BLOCKING);
+  // TODO: Column types
 }

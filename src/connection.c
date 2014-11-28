@@ -17,8 +17,10 @@
 
 #include "connection.h"
 #include "query.h"
+#include "statement.h"
 
 extern PyObject *_attachsql_ClientError;
+extern PyTypeObject _attachsql_StatementObject_Type;
 
 static PyMethodDef _attachsql_ConnectionObject_methods[]= {
   {
@@ -141,6 +143,12 @@ static PyMethodDef _attachsql_ConnectionObject_methods[]= {
     METH_VARARGS,
     "Sets connection options"
   },
+  {
+    "statement_prepare",
+    (PyCFunction)_attachsql_ConnectionObject_statement_prepare,
+    METH_VARARGS,
+    "Start a prepared statement"
+  },
   {NULL, NULL}
 };
 
@@ -222,7 +230,7 @@ PyObject *_attachsql_ConnectionObject_poll(_attachsql_ConnectionObject *self, Py
 PyObject *_attachsql_ConnectionObject_set_ssl(_attachsql_ConnectionObject *self, PyObject *args)
 {
   char *key, *cert, *ca, *capath, *cipher;
-  bool verify= false;
+  unsigned int verify= 0;
   attachsql_error_t *error= NULL;
 
   if (!PyArg_ParseTuple(args, "sssss|b", &key, &cert, &ca, &capath, &cipher, &verify))
@@ -263,6 +271,27 @@ PyObject *_attachsql_ConnectionObject_get_server_version(_attachsql_ConnectionOb
   version= attachsql_connect_get_server_version(self->conn);
   Py_END_ALLOW_THREADS
   return PyString_FromString(version);
+}
+
+PyObject *_attachsql_ConnectionObject_statement_prepare(_attachsql_ConnectionObject *self, PyObject *args)
+{
+  // TODO: if there is an active statement don't let us create a second
+  _attachsql_StatementObject *stmt= NULL;
+
+  stmt= (_attachsql_StatementObject*) _attachsql_StatementObject_Type.tp_alloc(&_attachsql_StatementObject_Type, 0);
+  if (stmt == NULL)
+  {
+    return NULL;
+  }
+  stmt->pycon= self;
+  stmt->stmt= NULL;
+  Py_INCREF(self);
+  if (_attachsql_StatementObject_Initialize(stmt, args, NULL))
+  {
+    Py_DECREF(stmt);
+    stmt= NULL;
+  }
+  return (PyObject *) stmt;
 }
 
 void _attachsql_ConnectionObject_dealloc(_attachsql_ConnectionObject *self)

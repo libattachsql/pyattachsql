@@ -8,5 +8,6 @@ include tox.ini
 include src/module.h
 include src/connection.h
 include src/query.h
+include src/statement.h
 exclude .gitignore
 graft doc

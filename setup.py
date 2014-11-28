@@ -19,7 +19,8 @@ setup(
                     sources=['src/module.c',
                              'src/connection.c',
                              'src/util.c',
-                             'src/query.c'
+                             'src/query.c',
+                             'src/statement.c'
                             ],
                     libraries=['attachsql']),
                 ]
