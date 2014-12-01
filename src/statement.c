@@ -157,6 +157,7 @@ int _attachsql_StatementObject_Initialize(_attachsql_StatementObject *self, PyOb
     _attachsql_Exception(error);
     return -1;
   }
+  PyDateTime_IMPORT;
   return 0;
 }
 
@@ -191,7 +192,7 @@ PyObject *_attachsql_StatementObject_reset(_attachsql_StatementObject *self, PyO
 PyObject *_attachsql_StatementObject_send_long_data(_attachsql_StatementObject *self, PyObject *args)
 {
   PyObject *data= NULL;
-  uint16_t param_no= 0;
+  unsigned int param_no= 0;
   char *str_data= NULL;
   ssize_t length= 0;
   attachsql_error_t *error= NULL;
@@ -201,7 +202,7 @@ PyObject *_attachsql_StatementObject_send_long_data(_attachsql_StatementObject *
     return NULL;
   }
 
-  if (!PyDict_SetItem(self->set_ref_store, PyInt_FromLong((unsigned long) param_no), data))
+  if (PyDict_SetItem(self->set_ref_store, PyInt_FromLong((unsigned long) param_no), data))
   {
     return NULL;
   }
@@ -232,16 +233,16 @@ PyObject *_attachsql_StatementObject_param_count(_attachsql_StatementObject *sel
 PyObject *_attachsql_StatementObject_set_int(_attachsql_StatementObject *self, PyObject *args)
 {
   PyObject *data= NULL;
-  uint16_t param_no= 0;
+  unsigned int param_no= 0;
   unsigned char is_unsigned= 0;
   attachsql_error_t *error= NULL;
 
-  if (!PyArg_ParseTuple(args, "IO!|b", &param_no, &PyLong_Type, &data, &is_unsigned))
+  if (!PyArg_ParseTuple(args, "IO!|b", &param_no, &PyInt_Type, &data, &is_unsigned))
   {
     return NULL;
   }
 
-  if (!PyDict_SetItem(self->set_ref_store, PyInt_FromLong((unsigned long) param_no), data))
+  if (PyDict_SetItem(self->set_ref_store, PyInt_FromLong((unsigned long) param_no), data))
   {
     return NULL;
   }
@@ -267,7 +268,7 @@ PyObject *_attachsql_StatementObject_set_int(_attachsql_StatementObject *self, P
 PyObject *_attachsql_StatementObject_set_bigint(_attachsql_StatementObject *self, PyObject *args)
 {
   PyObject *data= NULL;
-  uint16_t param_no= 0;
+  unsigned int param_no= 0;
   unsigned char is_unsigned= 0;
   attachsql_error_t *error= NULL;
 
@@ -276,7 +277,7 @@ PyObject *_attachsql_StatementObject_set_bigint(_attachsql_StatementObject *self
     return NULL;
   }
 
-  if (!PyDict_SetItem(self->set_ref_store, PyInt_FromLong((unsigned long) param_no), data))
+  if (PyDict_SetItem(self->set_ref_store, PyInt_FromLong((unsigned long) param_no), data))
   {
     return NULL;
   }
@@ -302,7 +303,7 @@ PyObject *_attachsql_StatementObject_set_bigint(_attachsql_StatementObject *self
 PyObject *_attachsql_StatementObject_set_float(_attachsql_StatementObject *self, PyObject *args)
 {
   PyObject *data= NULL;
-  uint16_t param_no= 0;
+  unsigned int param_no= 0;
   attachsql_error_t *error= NULL;
   double double_data= 0;
 
@@ -311,7 +312,7 @@ PyObject *_attachsql_StatementObject_set_float(_attachsql_StatementObject *self,
     return NULL;
   }
 
-  if (!PyDict_SetItem(self->set_ref_store, PyInt_FromLong((unsigned long) param_no), data))
+  if (PyDict_SetItem(self->set_ref_store, PyInt_FromLong((unsigned long) param_no), data))
   {
     return NULL;
   }
@@ -330,7 +331,7 @@ PyObject *_attachsql_StatementObject_set_float(_attachsql_StatementObject *self,
 PyObject *_attachsql_StatementObject_set_string(_attachsql_StatementObject *self, PyObject *args)
 {
   PyObject *data= NULL;
-  uint16_t param_no= 0;
+  unsigned int param_no= 0;
   char *str_data= NULL;
   ssize_t length= 0;
   attachsql_error_t *error= NULL;
@@ -340,12 +341,12 @@ PyObject *_attachsql_StatementObject_set_string(_attachsql_StatementObject *self
     return NULL;
   }
 
-  if (!PyDict_SetItem(self->set_ref_store, PyInt_FromLong((unsigned long) param_no), data))
+  if (PyDict_SetItem(self->set_ref_store, PyInt_FromLong((unsigned long) param_no), data))
   {
     return NULL;
   }
 
-  if (!PyString_AsStringAndSize(data, &str_data, &length))
+  if (PyString_AsStringAndSize(data, &str_data, &length))
   {
     return NULL;
   }
@@ -361,7 +362,7 @@ PyObject *_attachsql_StatementObject_set_string(_attachsql_StatementObject *self
 
 PyObject *_attachsql_StatementObject_set_null(_attachsql_StatementObject *self, PyObject *args)
 {
-  uint16_t param_no= 0;
+  unsigned int param_no= 0;
   attachsql_error_t *error= NULL;
 
   if (!PyArg_ParseTuple(args, "I", &param_no))
@@ -382,7 +383,7 @@ PyObject *_attachsql_StatementObject_set_null(_attachsql_StatementObject *self, 
 PyObject *_attachsql_StatementObject_set_datetime(_attachsql_StatementObject *self, PyObject *args)
 {
   PyObject *data= NULL;
-  uint16_t param_no= 0;
+  unsigned int param_no= 0;
   attachsql_error_t *error= NULL;
   int year, month, day, hour, minute, second, microsecond;
 
@@ -396,7 +397,7 @@ PyObject *_attachsql_StatementObject_set_datetime(_attachsql_StatementObject *se
     return NULL;
   }
 
-  if (!PyDict_SetItem(self->set_ref_store, PyInt_FromLong((unsigned long) param_no), data))
+  if (PyDict_SetItem(self->set_ref_store, PyInt_FromLong((unsigned long) param_no), data))
   {
     return NULL;
   }
@@ -431,7 +432,7 @@ PyObject *_attachsql_StatementObject_set_datetime(_attachsql_StatementObject *se
 PyObject *_attachsql_StatementObject_set_time(_attachsql_StatementObject *self, PyObject *args)
 {
   PyObject *data= NULL;
-  uint16_t param_no= 0;
+  unsigned int param_no= 0;
   attachsql_error_t *error= NULL;
   int hour, minute, second, microsecond;
 
@@ -445,7 +446,7 @@ PyObject *_attachsql_StatementObject_set_time(_attachsql_StatementObject *self, 
     return NULL;
   }
 
-  if (!PyDict_SetItem(self->set_ref_store, PyInt_FromLong((unsigned long) param_no), data))
+  if (PyDict_SetItem(self->set_ref_store, PyInt_FromLong((unsigned long) param_no), data))
   {
     return NULL;
   }
@@ -483,7 +484,7 @@ PyObject *_attachsql_StatementObject_get_int(_attachsql_StatementObject *self, P
   attachsql_error_t *error= NULL;
   unsigned int column_no= 0;
   unsigned char get_unsigned= 0;
-  if (!PyArg_ParseTuple(args, "I|I", &column_no, &get_unsigned))
+  if (!PyArg_ParseTuple(args, "I|b", &column_no, &get_unsigned))
   {
     return NULL;
   }
@@ -513,7 +514,7 @@ PyObject *_attachsql_StatementObject_get_bigint(_attachsql_StatementObject *self
   attachsql_error_t *error= NULL;
   unsigned int column_no= 0;
   unsigned char get_unsigned= 0;
-  if (!PyArg_ParseTuple(args, "I|I", &column_no, &get_unsigned))
+  if (!PyArg_ParseTuple(args, "I|b", &column_no, &get_unsigned))
   {
     return NULL;
   }
