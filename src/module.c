@@ -21,6 +21,7 @@
 
 extern PyTypeObject _attachsql_ConnectionObject_Type;
 extern PyTypeObject _attachsql_StatementObject_Type;
+extern PyTypeObject _attachsql_QueryObject_Type;
 
 PyObject *_attachsql_Error;
   PyObject *_attachsql_InternalError;
@@ -113,6 +114,11 @@ initattachsql(void)
   _attachsql_StatementObject_Type.tp_alloc= PyType_GenericAlloc;
   _attachsql_StatementObject_Type.tp_new= PyType_GenericNew;
   _attachsql_StatementObject_Type.tp_free= PyObject_GC_Del;
+
+  _attachsql_QueryObject_Type.ob_type= &PyType_Type;
+  _attachsql_QueryObject_Type.tp_alloc= PyType_GenericAlloc;
+  _attachsql_QueryObject_Type.tp_new= PyType_GenericNew;
+  _attachsql_QueryObject_Type.tp_free= PyObject_GC_Del;
 
   if (!(dict = PyModule_GetDict(module)))
   {

@@ -21,6 +21,7 @@
 
 extern PyObject *_attachsql_ClientError;
 extern PyTypeObject _attachsql_StatementObject_Type;
+extern PyTypeObject _attachsql_QueryObject_Type;
 
 static PyMethodDef _attachsql_ConnectionObject_methods[]= {
   {
@@ -52,84 +53,6 @@ static PyMethodDef _attachsql_ConnectionObject_methods[]= {
     (PyCFunction)_attachsql_ConnectionObject_query,
     METH_VARARGS,
     "Send a query to the server"
-  },
-  {
-    "query_close",
-    (PyCFunction)_attachsql_ConnectionObject_query_close,
-    METH_NOARGS,
-    "Close a query"
-  },
-  {
-    "query_column_count",
-    (PyCFunction)_attachsql_ConnectionObject_query_column_count,
-    METH_NOARGS,
-    "Get the column count for a query"
-  },
-  {
-    "query_row_get",
-    (PyCFunction)_attachsql_ConnectionObject_query_row_get,
-    METH_NOARGS,
-    "Get the current row"
-  },
-  {
-    "query_row_next",
-    (PyCFunction)_attachsql_ConnectionObject_query_row_next,
-    METH_NOARGS,
-    "Start retrieving the next row"
-  },
-  {
-    "insert_id",
-    (PyCFunction)_attachsql_ConnectionObject_last_insert_id,
-    METH_NOARGS,
-    "Get the last insert id for the connection"
-  },
-  {
-    "affected_rows",
-    (PyCFunction)_attachsql_ConnectionObject_affected_rows,
-    METH_NOARGS,
-    "Get the number of affected rows"
-  },
-  {
-    "warning_count",
-    (PyCFunction)_attachsql_ConnectionObject_warning_count,
-    METH_NOARGS,
-    "Get the number of warnings"
-  },
-  {
-    "query_info",
-    (PyCFunction)_attachsql_ConnectionObject_query_info,
-    METH_NOARGS,
-    "Get the query info"
-  },
-  {
-    "query_row_count",
-    (PyCFunction)_attachsql_ConnectionObject_query_row_count,
-    METH_NOARGS,
-    "Get the row count for a buffered query"
-  },
-  {
-    "query_next_result",
-    (PyCFunction)_attachsql_ConnectionObject_query_next_result,
-    METH_NOARGS,
-    "Start retrieving the next result set"
-  },
-  {
-    "query_buffer_rows",
-    (PyCFunction)_attachsql_ConnectionObject_query_buffer_rows,
-    METH_NOARGS,
-    "Enable the buffering of query results"
-  },
-  {
-    "query_buffer_row_get",
-    (PyCFunction)_attachsql_ConnectionObject_query_buffer_row_get,
-    METH_NOARGS,
-    "Get the next row in a buffered result set"
-  },
-  {
-    "query_row_get_offset",
-    (PyCFunction)_attachsql_ConnectionObject_query_row_get_offset,
-    METH_VARARGS,
-    "Get a specified row from a buffered result set"
   },
   {
     "set_ssl",
@@ -292,6 +215,26 @@ PyObject *_attachsql_ConnectionObject_statement_prepare(_attachsql_ConnectionObj
     stmt= NULL;
   }
   return (PyObject *) stmt;
+}
+
+PyObject *_attachsql_ConnectionObject_query(_attachsql_ConnectionObject *self, PyObject *args)
+{
+  // TODO: if there is an active query don't let us create a second
+  _attachsql_QueryObject *query= NULL;
+
+  query= (_attachsql_QueryObject*) _attachsql_QueryObject_Type.tp_alloc(&_attachsql_QueryObject_Type, 0);
+  if (query == NULL)
+  {
+    return NULL;
+  }
+  query->pycon= self;
+  Py_INCREF(self);
+  if (_attachsql_QueryObject_Initialize(query, args, NULL))
+  {
+    Py_DECREF(query);
+    query= NULL;
+  }
+  return (PyObject *) query;
 }
 
 void _attachsql_ConnectionObject_dealloc(_attachsql_ConnectionObject *self)

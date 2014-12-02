@@ -22,6 +22,7 @@ API Documentation
 
    api/module
    api/connection
+   api/query
    api/statement
 
 Indices and tables
