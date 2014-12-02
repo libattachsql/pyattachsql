@@ -465,7 +465,7 @@ PyObject *_attachsql_StatementObject_set_time(_attachsql_StatementObject *self, 
   Py_RETURN_TRUE;
 }
 
-PyObject *_attachsql_StatementObject_row_get(_attachsql_StatementObject *self, PyObject *args)
+PyObject *_attachsql_StatementObject_row_get(_attachsql_StatementObject *self, PyObject *unused)
 {
   attachsql_error_t *error= NULL;
 

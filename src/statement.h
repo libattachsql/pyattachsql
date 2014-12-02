@@ -54,7 +54,7 @@ PyObject *_attachsql_StatementObject_set_datetime(_attachsql_StatementObject *se
 
 PyObject *_attachsql_StatementObject_set_time(_attachsql_StatementObject *self, PyObject *args);
 
-PyObject *_attachsql_StatementObject_row_get(_attachsql_StatementObject *self, PyObject *args);
+PyObject *_attachsql_StatementObject_row_get(_attachsql_StatementObject *self, PyObject *unused);
 
 PyObject *_attachsql_StatementObject_get_int(_attachsql_StatementObject *self, PyObject *args);
 

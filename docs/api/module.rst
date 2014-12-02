@@ -124,6 +124,63 @@ Option Constants
 
    Enable semi-blocking mode
 
+.. _type-constants:
+
+Column Type Constants
+^^^^^^^^^^^^^^^^^^^^^
+
+.. py:data:: COLUMN_TYPE_DECIMAL
+
+.. py:data:: COLUMN_TYPE_TINY
+
+.. py:data:: COLUMN_TYPE_SHORT
+
+.. py:data:: COLUMN_TYPE_LONG
+
+.. py:data:: COLUMN_TYPE_FLOAT
+
+.. py:data:: COLUMN_TYPE_DOUBLE
+
+.. py:data:: COLUMN_TYPE_NULL
+
+.. py:data:: COLUMN_TYPE_TIMESTAMP
+
+.. py:data:: COLUMN_TYPE_LONGLONG
+
+.. py:data:: COLUMN_TYPE_INT24
+
+.. py:data:: COLUMN_TYPE_DATE
+
+.. py:data:: COLUMN_TYPE_TIME
+
+.. py:data:: COLUMN_TYPE_DATETIME
+
+.. py:data:: COLUMN_TYPE_YEAR
+
+.. py:data:: COLUMN_TYPE_VARCHAR
+
+.. py:data:: COLUMN_TYPE_BIT
+
+.. py:data:: COLUMN_TYPE_NEWDECIMAL
+
+.. py:data:: COLUMN_TYPE_ENUM
+
+.. py:data:: COLUMN_TYPE_SET
+
+.. py:data:: COLUMN_TYPE_TINY_BLOB
+
+.. py:data:: COLUMN_TYPE_MEDIUM_BLOB
+
+.. py:data:: COLUMN_TYPE_LONG_BLOB
+
+.. py:data:: COLUMN_TYPE_BLOB
+
+.. py:data:: COLUMN_TYPE_VARSTRING
+
+.. py:data:: COLUMN_TYPE_STRING
+
+.. py:data:: COLUMN_TYPE_GEOMETRY
+
 Functions
 ---------
 
