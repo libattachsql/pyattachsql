@@ -17,8 +17,11 @@
 
 #include "module.h"
 #include "connection.h"
+#include <datetime.h>
 
 extern PyTypeObject _attachsql_ConnectionObject_Type;
+extern PyTypeObject _attachsql_StatementObject_Type;
+
 PyObject *_attachsql_Error;
   PyObject *_attachsql_InternalError;
   PyObject *_attachsql_ClientError;
@@ -106,6 +109,11 @@ initattachsql(void)
   _attachsql_ConnectionObject_Type.tp_new= PyType_GenericNew;
   _attachsql_ConnectionObject_Type.tp_free= PyObject_GC_Del;
 
+  _attachsql_StatementObject_Type.ob_type= &PyType_Type;
+  _attachsql_StatementObject_Type.tp_alloc= PyType_GenericAlloc;
+  _attachsql_StatementObject_Type.tp_new= PyType_GenericNew;
+  _attachsql_StatementObject_Type.tp_free= PyObject_GC_Del;
+
   if (!(dict = PyModule_GetDict(module)))
   {
     if (PyErr_Occurred())
@@ -141,6 +149,8 @@ initattachsql(void)
   Py_INCREF(_attachsql_ServerError);
   PyModule_AddObject(module, "ServerError", _attachsql_ServerError);
 
+  PyDateTime_IMPORT;
+
   PyModule_AddIntConstant(module, "RETURN_NONE", ATTACHSQL_RETURN_NONE);
   PyModule_AddIntConstant(module, "RETURN_NOT_CONNECTED", ATTACHSQL_RETURN_NOT_CONNECTED);
   PyModule_AddIntConstant(module, "RETURN_IDLE", ATTACHSQL_RETURN_IDLE);
@@ -164,4 +174,30 @@ initattachsql(void)
   PyModule_AddIntConstant(module, "OPTION_NO_SCHEMA", ATTACHSQL_OPTION_NO_SCHEMA);
   PyModule_AddIntConstant(module, "OPTION_SSL_NO_VERIFY", ATTACHSQL_OPTION_SSL_NO_VERIFY);
   PyModule_AddIntConstant(module, "OPTION_SEMI_BLOCKING", ATTACHSQL_OPTION_SEMI_BLOCKING);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_DECIMAL", ATTACHSQL_COLUMN_TYPE_DECIMAL);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_TINY", ATTACHSQL_COLUMN_TYPE_TINY);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_SHORT", ATTACHSQL_COLUMN_TYPE_SHORT);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_LONG", ATTACHSQL_COLUMN_TYPE_LONG);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_FLOAT", ATTACHSQL_COLUMN_TYPE_FLOAT);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_DOUBLE", ATTACHSQL_COLUMN_TYPE_DOUBLE);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_NULL", ATTACHSQL_COLUMN_TYPE_NULL);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_TIMESTAMP", ATTACHSQL_COLUMN_TYPE_TIMESTAMP);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_LONGLONG", ATTACHSQL_COLUMN_TYPE_LONGLONG);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_INT24", ATTACHSQL_COLUMN_TYPE_INT24);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_DATE", ATTACHSQL_COLUMN_TYPE_DATE);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_TIME", ATTACHSQL_COLUMN_TYPE_TIME);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_DATETIME", ATTACHSQL_COLUMN_TYPE_DATETIME);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_YEAR", ATTACHSQL_COLUMN_TYPE_YEAR);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_VARCHAR", ATTACHSQL_COLUMN_TYPE_VARCHAR);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_BIT", ATTACHSQL_COLUMN_TYPE_BIT);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_NEWDECIMAL", ATTACHSQL_COLUMN_TYPE_NEWDECIMAL);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_ENUM", ATTACHSQL_COLUMN_TYPE_ENUM);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_SET", ATTACHSQL_COLUMN_TYPE_SET);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_TINY_BLOB", ATTACHSQL_COLUMN_TYPE_TINY_BLOB);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_MEDIUM_BLOB", ATTACHSQL_COLUMN_TYPE_MEDIUM_BLOB);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_LONG_BLOB", ATTACHSQL_COLUMN_TYPE_LONG_BLOB);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_BLOB", ATTACHSQL_COLUMN_TYPE_BLOB);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_VARSTRING", ATTACHSQL_COLUMN_TYPE_VARSTRING);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_STRING", ATTACHSQL_COLUMN_TYPE_STRING);
+  PyModule_AddIntConstant(module, "COLUMN_TYPE_GEOMETRY", ATTACHSQL_COLUMN_TYPE_GEOMETRY);
 }

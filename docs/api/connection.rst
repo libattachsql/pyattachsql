@@ -165,3 +165,11 @@ Connection Class
       :param unused: This parameter is for future use
       :return: ``True`` on success
       :rtype: boolean
+
+   .. py:method:: prepare_statement(statement)
+
+      Initialize and start sending a prepared statement
+
+      :param str statement: The statement to send
+      :return: An instance of :py:class:`statement`
+      :rtype: statement
