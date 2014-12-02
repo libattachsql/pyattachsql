@@ -20,30 +20,40 @@
 #include <Python.h>
 #include "module.h"
 
-PyObject *_attachsql_ConnectionObject_query(_attachsql_ConnectionObject *self, PyObject *args);
+int _attachsql_QueryObject_Initialize(_attachsql_QueryObject *self, PyObject *args, PyObject *kwargs);
 
-PyObject *_attachsql_ConnectionObject_query_close(_attachsql_ConnectionObject *self, PyObject *unused);
+int _attachsql_QueryObject_clear(_attachsql_QueryObject *self);
 
-PyObject *_attachsql_ConnectionObject_query_column_count(_attachsql_ConnectionObject *self, PyObject *unused);
+int _attachsql_QueryObject_traverse(_attachsql_QueryObject *self, visitproc visit, void *arg);
 
-PyObject *_attachsql_ConnectionObject_query_row_get(_attachsql_ConnectionObject *self, PyObject *unused);
+PyObject *_attachsql_QueryObject_repr(_attachsql_QueryObject *self);
 
-PyObject *_attachsql_ConnectionObject_query_row_next(_attachsql_ConnectionObject *self, PyObject *unused);
+int _attachsql_QueryObject_setattr(_attachsql_QueryObject *self, char *name, PyObject *v);
 
-PyObject *_attachsql_ConnectionObject_last_insert_id(_attachsql_ConnectionObject *self, PyObject *unused);
+PyObject *_attachsql_QueryObject_getattr(_attachsql_QueryObject *self, char *name);
 
-PyObject *_attachsql_ConnectionObject_affected_rows(_attachsql_ConnectionObject *self, PyObject *unused);
+void _attachsql_QueryObject_dealloc(_attachsql_QueryObject *self);
 
-PyObject *_attachsql_ConnectionObject_warning_count(_attachsql_ConnectionObject *self, PyObject *unused);
+PyObject *_attachsql_QueryObject_column_count(_attachsql_QueryObject *self, PyObject *unused);
 
-PyObject *_attachsql_ConnectionObject_query_info(_attachsql_ConnectionObject *self, PyObject *unused);
+PyObject *_attachsql_QueryObject_row_get(_attachsql_QueryObject *self, PyObject *unused);
 
-PyObject *_attachsql_ConnectionObject_query_row_count(_attachsql_ConnectionObject *self, PyObject *unused);
+PyObject *_attachsql_QueryObject_row_next(_attachsql_QueryObject *self, PyObject *unused);
 
-PyObject *_attachsql_ConnectionObject_query_next_result(_attachsql_ConnectionObject *self, PyObject *unused);
+PyObject *_attachsql_QueryObject_last_insert_id(_attachsql_QueryObject *self, PyObject *unused);
 
-PyObject *_attachsql_ConnectionObject_query_buffer_rows(_attachsql_ConnectionObject *self, PyObject *unused);
+PyObject *_attachsql_QueryObject_affected_rows(_attachsql_QueryObject *self, PyObject *unused);
 
-PyObject *_attachsql_ConnectionObject_query_buffer_row_get(_attachsql_ConnectionObject *self, PyObject *unused);
+PyObject *_attachsql_QueryObject_warning_count(_attachsql_QueryObject *self, PyObject *unused);
 
-PyObject *_attachsql_ConnectionObject_query_row_get_offset(_attachsql_ConnectionObject *self, PyObject *args);
+PyObject *_attachsql_QueryObject_info(_attachsql_QueryObject *self, PyObject *unused);
+
+PyObject *_attachsql_QueryObject_row_count(_attachsql_QueryObject *self, PyObject *unused);
+
+PyObject *_attachsql_QueryObject_next_result(_attachsql_QueryObject *self, PyObject *unused);
+
+PyObject *_attachsql_QueryObject_buffer_rows(_attachsql_QueryObject *self, PyObject *unused);
+
+PyObject *_attachsql_QueryObject_buffer_row_get(_attachsql_QueryObject *self, PyObject *unused);
+
+PyObject *_attachsql_QueryObject_row_get_offset(_attachsql_QueryObject *self, PyObject *args);

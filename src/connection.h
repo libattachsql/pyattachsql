@@ -47,3 +47,5 @@ PyObject *_attachsql_ConnectionObject_set_ssl(_attachsql_ConnectionObject *self,
 PyObject *_attachsql_ConnectionObject_set_option(_attachsql_ConnectionObject *self, PyObject *args);
 
 PyObject *_attachsql_ConnectionObject_statement_prepare(_attachsql_ConnectionObject *self, PyObject *args);
+
+PyObject *_attachsql_ConnectionObject_query(_attachsql_ConnectionObject *self, PyObject *args);

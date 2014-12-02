@@ -19,7 +19,7 @@ class QueryTest(unittest.TestCase):
     def test_basic_query(self):
         ret = 0
         con = attachsql.connect("localhost", "test", "test", "test", 3306)
-        con.query("SHOW PROCESSLIST")
+        query = con.query("SHOW PROCESSLIST")
         try:
             while ret != attachsql.RETURN_ROW_READY:
                 ret=con.poll()
@@ -28,14 +28,14 @@ class QueryTest(unittest.TestCase):
     def test_escape_query(self):
         ret = 0
         con = attachsql.connect("localhost", "test", "test", "test", 3306)
-        con.query("SELECT ? as a, ? as b", [{'type': attachsql.ESCAPE_TYPE_CHAR, 'data':'hello'}, {'type': attachsql.ESCAPE_TYPE_INT, 'data': 123456}])
+        query = con.query("SELECT ? as a, ? as b", [{'type': attachsql.ESCAPE_TYPE_CHAR, 'data':'hello'}, {'type': attachsql.ESCAPE_TYPE_INT, 'data': 123456}])
         try:
             while ret != attachsql.RETURN_ROW_READY:
                 ret=con.poll()
         except attachsql.ClientError:
             raise unittest.SkipTest("No MySQL server found")
-        self.assertEqual(con.query_column_count(), 2)
-        row = con.query_row_get()
+        self.assertEqual(query.column_count(), 2)
+        row = query.row_get()
         self.assertEqual(row[0], "hello")
         self.assertEqual(row[1], "123456")
 

@@ -41,6 +41,12 @@ typedef struct
   PyObject *set_ref_store;
 } _attachsql_StatementObject;
 
+typedef struct
+{
+  PyObject_HEAD
+  _attachsql_ConnectionObject *pycon;
+} _attachsql_QueryObject;
+
 PyObject *_attachsql_get_library_version(PyObject *self, PyObject *unused);
 
 PyObject *_attachsql_connect(PyObject *self, PyObject *args, PyObject *kwargs);
