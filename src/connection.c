@@ -100,6 +100,7 @@ int _attachsql_ConnectionObject_Initialize(_attachsql_ConnectionObject *self, Py
   strncpy(self->user, user, MAX_OPTION_SIZE);
   strncpy(self->pass, pass, MAX_OPTION_SIZE);
   strncpy(self->db, db, MAX_OPTION_SIZE);
+  self->in_group= false;
 
   self->conn= attachsql_connect_create(self->host, self->port, self->user, self->pass, self->db, &error);
   if (!self->conn)
@@ -240,7 +241,10 @@ PyObject *_attachsql_ConnectionObject_query(_attachsql_ConnectionObject *self, P
 void _attachsql_ConnectionObject_dealloc(_attachsql_ConnectionObject *self)
 {
   PyObject_GC_UnTrack(self);
-  attachsql_connect_destroy(self->conn);
+  if (!self->in_group)
+  {
+    attachsql_connect_destroy(self->conn);
+  }
   self->ob_type->tp_free(self);
 }
 

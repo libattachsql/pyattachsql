@@ -20,7 +20,8 @@ setup(
                              'src/connection.c',
                              'src/util.c',
                              'src/query.c',
-                             'src/statement.c'
+                             'src/statement.c',
+                             'src/group.c'
                             ],
                     libraries=['attachsql']),
                 ]
