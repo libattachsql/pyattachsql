@@ -15,17 +15,24 @@
 import unittest
 import attachsql
 
-def my_callback(events, con, query, is_finished):
+is_finished=0
+
+def my_callback(events, con, query, unused):
+    global is_finished
     if events == attachsql.EVENT_EOF:
         is_finished = is_finished + 1
+        return
     if events == attachsql.EVENT_ROW_READY:
         row = query.row_get()
         query.row_next()
+        return
+    if events != attachsql.EVENT_CONNECTED:
+        raise Exception("Bad event", events)
 
 class GroupTest(unittest.TestCase):
     def test_basic_query(self):
-        is_finished = 0
-        group = attachsql.group(my_callback, is_finished)
+        global is_finished
+        group = attachsql.group(my_callback, None)
         con1 = group.create_connection("localhost", "test", "test", "test", 3306)
         con2 = group.create_connection("localhost", "test", "test", "test", 3306)
         con3 = group.create_connection("localhost", "test", "test", "test", 3306)
@@ -34,3 +41,4 @@ class GroupTest(unittest.TestCase):
         con3.query("SHOW PROCESSLIST")
         while is_finished < 3:
             group.run()
+

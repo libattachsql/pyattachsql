@@ -23,6 +23,8 @@ setup(
                              'src/statement.c',
                              'src/group.c'
                             ],
-                    libraries=['attachsql']),
-                ]
+                    libraries=['attachsql'],
+#                    extra_compile_args=['-fsanitize=address','-O0','-g', '-fno-omit-frame-pointer'],
+#                    extra_link_args=['-fsanitize=address','-O0','-g', '-fno-omit-frame-pointer']
+                )]
 )

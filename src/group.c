@@ -48,16 +48,17 @@ int _attachsql_GroupObject_Initialize(_attachsql_GroupObject *self, PyObject *ar
   }
   if (cb_func)
   {
-    Py_INCREF(cb_func);
+    Py_XINCREF(cb_func);
   }
   if (cb_args)
   {
-    Py_INCREF(cb_args);
+    Py_XINCREF(cb_args);
   }
   self->cb_func= cb_func;
   self->cb_args= cb_args;
   self->group= attachsql_group_create(&error);
   self->conn_list= PyList_New(0);
+  self->context_list= PyList_New(0);
   if (error)
   {
     _attachsql_Exception(error);
@@ -72,12 +73,10 @@ void _attachsql_callback(attachsql_connect_t *con, attachsql_events_t events, vo
   _attachsql_ConnectionObject *pycon= (_attachsql_ConnectionObject*) PyTuple_GetItem(ctext_data, 0);
   _attachsql_GroupObject *self= (_attachsql_GroupObject*) PyTuple_GetItem(ctext_data, 1);
   PyGILState_STATE gstate;
-  _attachsql_QueryObject *query= (_attachsql_QueryObject*)_PyObject_New(&_attachsql_QueryObject_Type);
-  query->pycon= pycon;
 
   if (self->cb_func)
   {
-    PyObject *cbargs= Py_BuildValue("iOO", &events, &pycon, &query, &self->cb_args);
+    PyObject *cbargs= Py_BuildValue("iOOO", events, pycon, pycon->query, self->cb_args);
     gstate = PyGILState_Ensure();
     if (error)
     {
@@ -108,9 +107,10 @@ PyObject *_attachsql_GroupObject_create_connection(_attachsql_GroupObject *self,
   attachsql_connect_set_callback(con->conn, _attachsql_callback, context);
   attachsql_group_add_connection(self->group, con->conn, &error);
   con->in_group= true;
+  PyList_Append(self->context_list, context);
   if (error)
   {
-    Py_DECREF(con);
+    Py_XDECREF(con);
     return NULL;
   }
   PyList_Append(self->conn_list, (PyObject*)con);
@@ -129,8 +129,21 @@ PyObject *_attachsql_GroupObject_run(_attachsql_GroupObject *self, PyObject *unu
 
 void _attachsql_GroupObject_dealloc(_attachsql_GroupObject *self)
 {
+  ssize_t listsize, listpos;
   PyObject_GC_UnTrack(self);
-  Py_DECREF(self->conn_list);
+  listsize= PyList_Size(self->context_list);
+  for (listpos= 0; listpos < listsize; listpos++)
+  {
+    Py_XDECREF(PyList_GetItem(self->context_list, listpos));
+  }
+  Py_XDECREF(self->context_list);
+
+  listsize= PyList_Size(self->conn_list);
+  for (listpos= 0; listpos < listsize; listpos++)
+  {
+    Py_XDECREF(PyList_GetItem(self->conn_list, listpos));
+  }
+  Py_XDECREF(self->conn_list);
   attachsql_group_destroy(self->group);
   self->ob_type->tp_free(self);
 }

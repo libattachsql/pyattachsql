@@ -101,6 +101,7 @@ int _attachsql_ConnectionObject_Initialize(_attachsql_ConnectionObject *self, Py
   strncpy(self->pass, pass, MAX_OPTION_SIZE);
   strncpy(self->db, db, MAX_OPTION_SIZE);
   self->in_group= false;
+  self->query= NULL;
 
   self->conn= attachsql_connect_create(self->host, self->port, self->user, self->pass, self->db, &error);
   if (!self->conn)
@@ -222,6 +223,13 @@ PyObject *_attachsql_ConnectionObject_query(_attachsql_ConnectionObject *self, P
 {
   // TODO: if there is an active query don't let us create a second
   _attachsql_QueryObject *query= NULL;
+  
+  if (self->query)
+  {
+    // TODO: may need is_closed flag?  Could well use this logic for the TODO above
+    attachsql_query_close(self->conn);
+    Py_XDECREF(self->query);
+  }
 
   query= (_attachsql_QueryObject*) _attachsql_QueryObject_Type.tp_alloc(&_attachsql_QueryObject_Type, 0);
   if (query == NULL)
@@ -232,8 +240,13 @@ PyObject *_attachsql_ConnectionObject_query(_attachsql_ConnectionObject *self, P
   Py_INCREF(self);
   if (_attachsql_QueryObject_Initialize(query, args, NULL))
   {
-    Py_DECREF(query);
+    Py_XDECREF(query);
     query= NULL;
+  }
+  if (self->in_group)
+  {
+    self->query= (PyObject*)query;
+    Py_XINCREF(query);
   }
   return (PyObject *) query;
 }
@@ -244,6 +257,12 @@ void _attachsql_ConnectionObject_dealloc(_attachsql_ConnectionObject *self)
   if (!self->in_group)
   {
     attachsql_connect_destroy(self->conn);
+  }
+  
+  if (self->query)
+  {
+    Py_XDECREF(self->query);
+    self->query= NULL;
   }
   self->ob_type->tp_free(self);
 }

@@ -32,6 +32,7 @@ typedef struct
   char pass[MAX_OPTION_SIZE];
   char db[MAX_OPTION_SIZE];
   bool in_group;
+  PyObject *query;
 } _attachsql_ConnectionObject;
 
 typedef struct
@@ -55,6 +56,7 @@ typedef struct
   PyObject *cb_func;
   PyObject *cb_args;
   PyObject *conn_list;
+  PyObject *context_list;
 } _attachsql_GroupObject;
 
 PyObject *_attachsql_get_library_version(PyObject *self, PyObject *unused);
