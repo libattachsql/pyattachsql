@@ -24,6 +24,8 @@ def my_callback(events, con, query, unused):
         return
     if events == attachsql.EVENT_ROW_READY:
         row = query.row_get()
+        if row[0] <= 0:
+            raise Exception("Bad connection ID in result")
         query.row_next()
         return
     if events != attachsql.EVENT_CONNECTED:
@@ -40,5 +42,8 @@ class GroupTest(unittest.TestCase):
         con2.query("SHOW PROCESSLIST")
         con3.query("SHOW PROCESSLIST")
         while is_finished < 3:
-            group.run()
+            try:
+                group.run()
+            except attachsql.ClientError:
+                raise unittest.SkipTest("No MySQL server found")
 
