@@ -414,8 +414,12 @@ PyObject *_attachsql_QueryObject_row_get_offset(_attachsql_QueryObject *self, Py
 void _attachsql_QueryObject_dealloc(_attachsql_QueryObject *self)
 {
   PyObject_GC_UnTrack(self);
-  attachsql_query_close(self->pycon->conn);
-  Py_DECREF(self->pycon);
+  if (!self->pycon->in_group)
+  {
+    attachsql_query_close(self->pycon->conn);
+  }
+  self->pycon->query= NULL;
+  Py_XDECREF(self->pycon);
   self->ob_type->tp_free(self);
 }
 

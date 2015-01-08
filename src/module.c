@@ -17,11 +17,13 @@
 
 #include "module.h"
 #include "connection.h"
+#include "group.h"
 #include <datetime.h>
 
 extern PyTypeObject _attachsql_ConnectionObject_Type;
 extern PyTypeObject _attachsql_StatementObject_Type;
 extern PyTypeObject _attachsql_QueryObject_Type;
+extern PyTypeObject _attachsql_GroupObject_Type;
 
 PyObject *_attachsql_Error;
   PyObject *_attachsql_InternalError;
@@ -34,6 +36,12 @@ static PyMethodDef _attachsql_methods[] = {
     (PyCFunction)_attachsql_connect,
     METH_VARARGS | METH_KEYWORDS,
     "connect to a MySQL server"
+  },
+  {
+    "group",
+    (PyCFunction)_attachsql_group,
+    METH_VARARGS | METH_KEYWORDS,
+    "create a connection group"
   },
   {
     "get_library_version",
@@ -95,6 +103,23 @@ PyObject *_attachsql_connect(PyObject *self, PyObject *args, PyObject *kwargs)
   return (PyObject *) con;
 }
 
+PyObject *_attachsql_group(PyObject *self, PyObject *args, PyObject *kwargs)
+{
+  _attachsql_GroupObject *group= NULL;
+
+  group= (_attachsql_GroupObject*) _attachsql_GroupObject_Type.tp_alloc(&_attachsql_GroupObject_Type, 0);
+  if (group == NULL)
+  {
+    return NULL;
+  }
+  if (_attachsql_GroupObject_Initialize(group, args, kwargs))
+  {
+    Py_DECREF(group);
+    group= NULL;
+  }
+  return (PyObject *) group;
+}
+
 PyMODINIT_FUNC
 initattachsql(void)
 {
@@ -104,6 +129,10 @@ initattachsql(void)
   if (!module)
   {
     return;
+  }
+  if (! PyEval_ThreadsInitialized())
+  {
+    PyEval_InitThreads();
   }
   _attachsql_ConnectionObject_Type.ob_type= &PyType_Type;
   _attachsql_ConnectionObject_Type.tp_alloc= PyType_GenericAlloc;
@@ -119,6 +148,11 @@ initattachsql(void)
   _attachsql_QueryObject_Type.tp_alloc= PyType_GenericAlloc;
   _attachsql_QueryObject_Type.tp_new= PyType_GenericNew;
   _attachsql_QueryObject_Type.tp_free= PyObject_GC_Del;
+
+  _attachsql_GroupObject_Type.ob_type= &PyType_Type;
+  _attachsql_GroupObject_Type.tp_alloc= PyType_GenericAlloc;
+  _attachsql_GroupObject_Type.tp_new= PyType_GenericNew;
+  _attachsql_GroupObject_Type.tp_free= PyObject_GC_Del;
 
   if (!(dict = PyModule_GetDict(module)))
   {
@@ -206,4 +240,9 @@ initattachsql(void)
   PyModule_AddIntConstant(module, "COLUMN_TYPE_VARSTRING", ATTACHSQL_COLUMN_TYPE_VARSTRING);
   PyModule_AddIntConstant(module, "COLUMN_TYPE_STRING", ATTACHSQL_COLUMN_TYPE_STRING);
   PyModule_AddIntConstant(module, "COLUMN_TYPE_GEOMETRY", ATTACHSQL_COLUMN_TYPE_GEOMETRY);
+
+  PyModule_AddIntConstant(module, "EVENT_CONNECTED", ATTACHSQL_EVENT_CONNECTED);
+  PyModule_AddIntConstant(module, "EVENT_ERROR", ATTACHSQL_EVENT_ERROR);
+  PyModule_AddIntConstant(module, "EVENT_EOF", ATTACHSQL_EVENT_EOF);
+  PyModule_AddIntConstant(module, "EVENT_ROW_READY", ATTACHSQL_EVENT_ROW_READY);
 }
