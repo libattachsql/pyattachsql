@@ -42,6 +42,7 @@ int _attachsql_GroupObject_Initialize(_attachsql_GroupObject *self, PyObject *ar
   static char *kwlist[]= {"cbfunction", "cbargs", NULL};
   attachsql_error_t *error= NULL;
 
+  // TODO: Conectext should be optional
   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OO", kwlist, &cb_func, &cb_args))
   {
     return -1;

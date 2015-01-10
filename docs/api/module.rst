@@ -181,6 +181,19 @@ Column Type Constants
 
 .. py:data:: COLUMN_TYPE_GEOMETRY
 
+.. _event-constants:
+
+Callback Event Constants
+------------------------
+
+.. py:data:: EVENT_CONNECTED
+
+.. py:data:: EVENT_ERROR
+
+.. py:data:: EVENT_EOF
+
+.. py:data:: EVENT_ROW_READY
+
 Functions
 ---------
 
@@ -199,3 +212,15 @@ Functions
 
    :return: A string representation of the version number
    :rtype: str
+
+Callback Function Prototypes
+----------------------------
+
+.. py:function:: my_callback(events, con, query, unused):
+
+   A user defined callback used for :py:class:`group`
+
+   :param int events: The event which triggered the callback from :ref:`event-constants`
+   :param object con: The connection object which triggered the callback
+   :param object query: The query object which triggered the callback
+   :param object context: The user supplied context
