@@ -42,7 +42,7 @@ int _attachsql_GroupObject_Initialize(_attachsql_GroupObject *self, PyObject *ar
   static char *kwlist[]= {"cbfunction", "cbargs", NULL};
   attachsql_error_t *error= NULL;
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OO", kwlist, &cb_func, &cb_args))
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|O", kwlist, &cb_func, &cb_args))
   {
     return -1;
   }
@@ -76,7 +76,15 @@ void _attachsql_callback(attachsql_connect_t *con, attachsql_events_t events, vo
 
   if (self->cb_func)
   {
-    PyObject *cbargs= Py_BuildValue("iOOO", events, pycon, pycon->query, self->cb_args);
+    PyObject *cbargs;
+    if (self->cb_args)
+    {
+      cbargs= Py_BuildValue("iOOO", events, pycon, pycon->query, self->cb_args);
+    }
+    else
+    {
+      cbargs= Py_BuildValue("iOO", events, pycon, pycon->query); 
+    }
     gstate = PyGILState_Ensure();
     if (error)
     {

@@ -22,6 +22,7 @@ API Documentation
 
    api/module
    api/connection
+   api/group
    api/query
    api/statement
 
