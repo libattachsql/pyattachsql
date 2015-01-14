@@ -45,7 +45,7 @@ class StatementTest(unittest.TestCase):
     def test_param(self):
         ret = 0
         con = attachsql.connect("localhost", "test", "test", "test", 3306)
-        stmt = con.statement_prepare("SELECT ? as a, ? as b, FROM_UNIXTIME(1196440219) as c")
+        stmt = con.statement_prepare("SELECT ? as a, ? as b, CONVERT_TZ(FROM_UNIXTIME(1196440219),@@session.time_zone,'+00:00') as c")
         try:
             while ret != attachsql.RETURN_EOF:
                 ret = con.poll()
@@ -72,7 +72,7 @@ class StatementTest(unittest.TestCase):
     def test_statement_reuse(self):
         ret = 0
         con = attachsql.connect("localhost", "test", "test", "test", 3306)
-        stmt = con.statement_prepare("SELECT ? as a, ? as b, FROM_UNIXTIME(1196440219) as c")
+        stmt = con.statement_prepare("SELECT ? as a, ? as b, CONVERT_TZ(FROM_UNIXTIME(1196440219),@@session.time_zone,'+00:00') as c")
         try:
             while ret != attachsql.RETURN_EOF:
                 ret = con.poll()
@@ -113,7 +113,7 @@ class StatementTest(unittest.TestCase):
     def test_statement_twice(self):
         ret = 0
         con = attachsql.connect("localhost", "test", "test", "test", 3306)
-        stmt = con.statement_prepare("SELECT ? as a, ? as b, FROM_UNIXTIME(1196440219) as c")
+        stmt = con.statement_prepare("SELECT ? as a, ? as b, CONVERT_TZ(FROM_UNIXTIME(1196440219),@@session.time_zone,'+00:00') as c")
         try:
             while ret != attachsql.RETURN_EOF:
                 ret = con.poll()
@@ -137,7 +137,7 @@ class StatementTest(unittest.TestCase):
                 self.assertEqual(stmt.get_char(2), "2007-11-30 16:30:19")
                 stmt.row_next()
         del(stmt)
-        stmt = con.statement_prepare("SELECT ? as a, ? as b, FROM_UNIXTIME(1196440219) as c")
+        stmt = con.statement_prepare("SELECT ? as a, ? as b, CONVERT_TZ(FROM_UNIXTIME(1196440219),@@session.time_zone,'+00:00') as c")
         ret = 0
         try:
             while ret != attachsql.RETURN_EOF:
