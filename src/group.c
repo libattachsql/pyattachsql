@@ -76,7 +76,15 @@ void _attachsql_callback(attachsql_connect_t *con, attachsql_events_t events, vo
 
   if (self->cb_func)
   {
-    PyObject *cbargs= Py_BuildValue("iOOO", events, pycon, pycon->query, self->cb_args);
+    PyObject *cbargs;
+    if (self->cb_args)
+    {
+      cbargs= Py_BuildValue("iOOO", events, pycon, pycon->query, self->cb_args);
+    }
+    else
+    {
+      cbargs= Py_BuildValue("iOO", events, pycon, pycon->query); 
+    }
     gstate = PyGILState_Ensure();
     if (error)
     {
