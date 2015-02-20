@@ -12,14 +12,34 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from attachdb.connection import Connection
-import attachdb.exceptions as errors
+import attachsql
 
-apilevel = "2.0"
+class Warning(StandardError):
+    pass
 
-threadsafety = 1
+class Error(StandardError):
+    pass
 
-paramstyle = 'qmark'
+class InterfaceError(Error):
+    pass
 
-def connect(**kwargs):
-    return Connection(**kwargs)
+class DatabaseError(Error):
+    pass
+
+class DataError(DatabaseError):
+    pass
+
+class OperationalError(DatabaseError):
+    pass
+
+class IntegrityError(DatabaseError):
+    pass
+
+class InternalError(DatabaseError):
+    pass
+
+class ProgrammingError(DatabaseError):
+    pass
+
+class NotSupportedError(DatabaseError):
+    pass

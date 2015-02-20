@@ -13,6 +13,8 @@
 # under the License.
 
 import attachsql
+from exceptions import ProgrammingError, OperationalError
+from cursor import Cursor
 
 class Connection(object):
     def __init__(self, host, port=3306, user='', password='', database='',
@@ -28,11 +30,24 @@ class Connection(object):
         """
 
         self.con = attachsql.connect(host, user, password, database, port)
-        self.con.connect()
-        self.__poll_connect_loop()
+        try:
+            self.con.connect()
+            self.__poll_connect_loop()
+        except Exception as e:
+            self.__process_exception(e)
         if autocommit is not None:
             self.autocommit(autocommit)
         self.connection_id = self.con.connection_id()
+        # TODO: command when not connected throws exception
+        self.connected = True
+
+    def __process_exception(self, exception):
+        if isinstance(exception, attachsql.ClientError):
+            raise ProgrammingError(exception)
+        elif isinstance (exception, attachsql.ServerError):
+            raise OperationalError(exception)
+        else:
+            raise exception
 
     def __poll_connect_loop(self):
         ret = 0
@@ -40,12 +55,15 @@ class Connection(object):
             ret = self.con.poll()
 
     def autocommit(self, setting):
-        if setting == True:
-            query = self.con.query("SET autocommit = 1")
-        else:
-            query = self.con.query("SET autocommit = 0")
+        try:
+            if setting == True:
+                query = self.con.query("SET autocommit = 1")
+            else:
+                query = self.con.query("SET autocommit = 0")
 
-        self.__poll_no_data_loop(query)
+            self.__poll_no_data_loop(query)
+        except Exception as e:
+            self.__process_exception(e)
 
     def __poll_no_data_loop(self, query):
         ret = 0
@@ -55,9 +73,25 @@ class Connection(object):
                 query.row_next()
 
     def commit(self):
-        query = self.con.query("COMMIT")
-        self.__poll_no_data_loop(query)
+        try:
+            query = self.con.query("COMMIT")
+            self.__poll_no_data_loop(query)
+        except Exception as e:
+            self.__process_exception(e)
 
     def rollback(self):
-        query = self.con.query("ROLLBACK")
-        self.__poll_no_data_loop(query)
+        try:
+            query = self.con.query("ROLLBACK")
+            self.__poll_no_data_loop(query)
+        except Exception as e:
+            self.__process_exception(e)
+
+    def close(self):
+        del self.con
+        self.connected = False
+
+    def __del__(self):
+        self.close()
+
+    def cursor(self):
+        return Cursor()
