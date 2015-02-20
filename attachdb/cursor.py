@@ -13,33 +13,56 @@
 # under the License.
 
 import attachsql
+from exceptions import process_exception
 
 class Cursor(object):
 
     arraysize = 1
     rowcount = 0
     description = []
+    first_row = True
 
     def __init__(self, con):
-        self.con = con
+        self.con = con.con
 
     def callproc(self, name, *args):
         pass
 
     def close(self):
-        pass
+        del self.query
 
     def __del__(self):
         self.close()
 
     def execute(self, query, *args):
-        pass
+        try:
+            self.query = self.con.query(query, *args)
+            self.__poll_row_read()
+        except Exception as e:
+            process_exception(e)
+
+    def __poll_row_read(self):
+        ret = 0
+        while ret not in [attachsql.RETURN_EOF, attachsql.RETURN_ROW_READY]:
+            ret = self.con.poll()
+
+        return ret
 
     def executemany(self, operation, sequence):
         pass
 
     def fetchone(self):
-        pass
+        try:
+            if (not self.first_row):
+                self.query.row_next()
+            else:
+                self.first_row = False
+            ret = self.__poll_row_read()
+            if ret == attachsql.RETURN_EOF:
+                return None
+            return self.query.row_get()
+        except Exception as e:
+            process_exception(e)
 
     def fetchmany(self, size=None):
         pass

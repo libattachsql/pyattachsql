@@ -14,6 +14,14 @@
 
 import attachsql
 
+def process_exception(exception):
+    if isinstance(exception, attachsql.ClientError):
+        raise ProgrammingError(exception)
+    elif isinstance (exception, attachsql.ServerError):
+        raise OperationalError(exception)
+    else:
+        raise exception
+
 class Warning(StandardError):
     pass
 
