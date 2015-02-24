@@ -27,6 +27,36 @@ class QueryTest(unittest.TestCase):
                 self.assertGreaterEqual(len(row), 4)
                 self.assertNotEqual(row[0], 0)
 
+    def test_query_fetchall(self):
+        con = attachdb.Connection(host="localhost", user="test", password="test", database="test", port=3306)
+        cursor = con.cursor()
+        cursor.execute("SHOW PROCESSLIST")
+        rows = cursor.fetchall()
+        self.assertGreater(len(rows), 0)
+        for row in rows:
+            self.assertGreaterEqual(len(row), 4)
+            self.assertNotEqual(row[0], 0)
+
+    def test_query_fetchmany_default(self):
+        con = attachdb.Connection(host="localhost", user="test", password="test", database="test", port=3306)
+        cursor = con.cursor()
+        cursor.execute("SHOW PROCESSLIST")
+        rows = cursor.fetchmany()
+        self.assertEqual(len(rows), 1)
+        for row in rows:
+            self.assertGreaterEqual(len(row), 4)
+            self.assertNotEqual(row[0], 0)
+
+    def test_query_fetchmany_fixed(self):
+        con = attachdb.Connection(host="localhost", user="test", password="test", database="test", port=3306)
+        cursor = con.cursor()
+        cursor.execute("SHOW PROCESSLIST")
+        rows = cursor.fetchmany(5)
+        self.assertLessEqual(len(rows), 5)
+        for row in rows:
+            self.assertGreaterEqual(len(row), 4)
+            self.assertNotEqual(row[0], 0)
+
     def test_query_fail(self):
         con = attachdb.Connection(host="localhost", user="test", password="test", database="test", port=3306)
         cursor = con.cursor()

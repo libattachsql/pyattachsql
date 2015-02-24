@@ -22,6 +22,8 @@ class Cursor(object):
     description = []
     first_row = True
 
+    # TODO: if query hasn't been executed fetch show throw an error
+
     def __init__(self, con):
         self.con = con.con
 
@@ -65,10 +67,29 @@ class Cursor(object):
             process_exception(e)
 
     def fetchmany(self, size=None):
-        pass
+        ret = []
+        if size is None:
+            size = self.arraysize
+        row_counter = 0
+        while row_counter < size:
+            row = self.fetchone()
+            if row is None:
+                break
+            else:
+                ret.append(row)
+            row_counter += 1
+        return ret
 
     def fetchall(self):
-        pass
+        ret = []
+        while True:
+            row = self.fetchone()
+            if row is None:
+                break
+            else:
+                ret.append(row)
+
+        return ret
 
     def nextset(self):
         pass
