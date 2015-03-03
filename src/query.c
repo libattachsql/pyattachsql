@@ -102,9 +102,9 @@ int _attachsql_QueryObject_Initialize(_attachsql_QueryObject *self, PyObject *ar
   int query_length;
   int param_count= 0;
   int i;
-  int64_t tmp_int;
-  uint64_t tmp_uint;
-  double tmp_double;
+  int64_t *tmp_int;
+  uint64_t *tmp_uint;
+  double *tmp_double;
   attachsql_query_parameter_st *asql_params= NULL;
   PyObject *param_list= NULL;
   PyObject *param_dict= NULL;
@@ -132,6 +132,10 @@ int _attachsql_QueryObject_Initialize(_attachsql_QueryObject *self, PyObject *ar
    */
   param_count= PyList_Size(param_list);
   asql_params= (attachsql_query_parameter_st*)malloc(sizeof(attachsql_query_parameter_st) * param_count);
+  /* This is ugly, need to find a better way */
+  tmp_int= (int64_t*)malloc(sizeof(int64_t) * param_count);
+  tmp_uint= (uint64_t*)malloc(sizeof(uint64_t) * param_count);
+  tmp_double= (double*)malloc(sizeof(double) * param_count);
 
   for (i= 0; i < param_count; i++)
   {
@@ -152,6 +156,7 @@ int _attachsql_QueryObject_Initialize(_attachsql_QueryObject *self, PyObject *ar
       return -1;
     }
     asql_params[i].type= PyInt_AsLong(type);
+
     switch (asql_params[i].type)
     {
       case ATTACHSQL_ESCAPE_TYPE_NONE:
@@ -163,70 +168,73 @@ int _attachsql_QueryObject_Initialize(_attachsql_QueryObject *self, PyObject *ar
         asql_params[i].length= PyString_Size(value);
         break;
       case ATTACHSQL_ESCAPE_TYPE_INT:
-        if (!is_unsigned && !PyInt_AsLong(is_unsigned))
+        if (is_unsigned && PyInt_AsLong(is_unsigned))
         {
           if (PyInt_Check(value))
           {
-            tmp_int= PyInt_AsLong(value);
+            tmp_uint[i]= PyInt_AsUnsignedLongMask(value);
           }
           else
           {
-            tmp_int= PyLong_AsLong(value);
+            tmp_uint[i]= PyLong_AsUnsignedLong(value);
           }
-          asql_params[i].data= &tmp_int;
-          asql_params[i].is_unsigned= false;
+          asql_params[i].data= &tmp_uint[i];
+          asql_params[i].is_unsigned= true;
         }
         else
         {
           if (PyInt_Check(value))
           {
-            tmp_uint= PyInt_AsUnsignedLongMask(value);
+            tmp_int[i]= PyInt_AsLong(value);
           }
           else
           {
-            tmp_uint= PyLong_AsUnsignedLong(value);
+            tmp_int[i]= PyLong_AsLong(value);
           }
-          asql_params[i].data= &tmp_uint;
-          asql_params[i].is_unsigned= true;
+          asql_params[i].data= &tmp_int[i];
+          asql_params[i].is_unsigned= false;
         }
         break;
       case ATTACHSQL_ESCAPE_TYPE_BIGINT:
-        if (!is_unsigned && !PyInt_AsLong(is_unsigned))
+        if (is_unsigned && PyInt_AsLong(is_unsigned))
         {
           if (PyInt_Check(value))
           {
-            tmp_int= PyInt_AsLong(value);
+            tmp_uint[i]= PyInt_AsUnsignedLongMask(value);
           }
           else
           {
-            tmp_int= PyLong_AsLongLong(value);
+            tmp_uint[i]= PyLong_AsUnsignedLongLong(value);
           }
-          asql_params[i].data= &tmp_int;
-          asql_params[i].is_unsigned= false;
+          asql_params[i].data= &tmp_uint[i];
+          asql_params[i].is_unsigned= true;
         }
         else
         {
           if (PyInt_Check(value))
           {
-            tmp_uint= PyInt_AsUnsignedLongMask(value);
+            tmp_int[i]= PyInt_AsLong(value);
           }
           else
           {
-            tmp_uint= PyLong_AsUnsignedLongLong(value);
+            tmp_int[i]= PyLong_AsLongLong(value);
           }
-          asql_params[i].data= &tmp_uint;
-          asql_params[i].is_unsigned= true;
+          asql_params[i].data= &tmp_int[i];
+          asql_params[i].is_unsigned= false;
         }
         break;
       case ATTACHSQL_ESCAPE_TYPE_FLOAT:
       case ATTACHSQL_ESCAPE_TYPE_DOUBLE:
-        tmp_double= PyFloat_AsDouble(value);
-        asql_params[i].data= &tmp_double;
+        tmp_double[i]= PyFloat_AsDouble(value);
+        asql_params[i].data= &tmp_double[i];
         break;
     }
   }
   ret= attachsql_query(self->pycon->conn, query_length, query, param_count, asql_params, &error);
   free(asql_params);
+  free(tmp_int);
+  free(tmp_uint);
+  free(tmp_double);
   if (error)
   {
     _attachsql_Exception(error);

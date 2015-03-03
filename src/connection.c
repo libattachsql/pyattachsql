@@ -238,7 +238,7 @@ PyObject *_attachsql_ConnectionObject_query(_attachsql_ConnectionObject *self, P
   }
   query->pycon= self;
   Py_INCREF(self);
-  if (_attachsql_QueryObject_Initialize(query, args, NULL))
+  if (_attachsql_QueryObject_Initialize(query, args, NULL) || PyErr_Occurred())
   {
     Py_XDECREF(query);
     query= NULL;

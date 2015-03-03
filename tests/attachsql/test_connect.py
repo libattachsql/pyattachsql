@@ -22,7 +22,7 @@ class ConnectTest(unittest.TestCase):
         self.assertEqual(con.connection_id(), 0)
         con.connect()
         try:
-            while ret != attachsql.RETURN_IDLE:
+            while ret != attachsql.RETURN_EOF:
                 ret=con.poll()
         except attachsql.ClientError:
             raise unittest.SkipTest("No MySQL server found")

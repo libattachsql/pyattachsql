@@ -43,7 +43,7 @@ class Connection(object):
 
     def __poll_connect_loop(self):
         ret = 0
-        while ret != attachsql.RETURN_IDLE:
+        while ret != attachsql.RETURN_EOF:
             ret = self.con.poll()
 
     def autocommit(self, setting):
