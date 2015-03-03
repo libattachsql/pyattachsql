@@ -165,13 +165,27 @@ int _attachsql_QueryObject_Initialize(_attachsql_QueryObject *self, PyObject *ar
       case ATTACHSQL_ESCAPE_TYPE_INT:
         if (!is_unsigned && !PyInt_AsLong(is_unsigned))
         {
-          tmp_int= PyLong_AsLong(value);
+          if (PyInt_Check(value))
+          {
+            tmp_int= PyInt_AsLong(value);
+          }
+          else
+          {
+            tmp_int= PyLong_AsLong(value);
+          }
           asql_params[i].data= &tmp_int;
           asql_params[i].is_unsigned= false;
         }
         else
         {
-          tmp_uint= PyLong_AsUnsignedLong(value);
+          if (PyInt_Check(value))
+          {
+            tmp_uint= PyInt_AsUnsignedLongMask(value);
+          }
+          else
+          {
+            tmp_uint= PyLong_AsUnsignedLong(value);
+          }
           asql_params[i].data= &tmp_uint;
           asql_params[i].is_unsigned= true;
         }
@@ -179,13 +193,27 @@ int _attachsql_QueryObject_Initialize(_attachsql_QueryObject *self, PyObject *ar
       case ATTACHSQL_ESCAPE_TYPE_BIGINT:
         if (!is_unsigned && !PyInt_AsLong(is_unsigned))
         {
-          tmp_int= PyLong_AsLongLong(value);
+          if (PyInt_Check(value))
+          {
+            tmp_int= PyInt_AsLong(value);
+          }
+          else
+          {
+            tmp_int= PyLong_AsLongLong(value);
+          }
           asql_params[i].data= &tmp_int;
           asql_params[i].is_unsigned= false;
         }
         else
         {
-          tmp_uint= PyLong_AsUnsignedLongLong(value);
+          if (PyInt_Check(value))
+          {
+            tmp_uint= PyInt_AsUnsignedLongMask(value);
+          }
+          else
+          {
+            tmp_uint= PyLong_AsUnsignedLongLong(value);
+          }
           asql_params[i].data= &tmp_uint;
           asql_params[i].is_unsigned= true;
         }

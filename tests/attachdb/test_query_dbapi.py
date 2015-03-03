@@ -14,8 +14,10 @@
 
 import unittest
 import attachdb
+import gc
 
 class QueryTest(unittest.TestCase):
+    # TODO: execute parameters test
     def test_query_fetchone(self):
         con = attachdb.Connection(host="localhost", user="test", password="test", database="test", port=3306)
         cursor = con.cursor()
@@ -56,6 +58,28 @@ class QueryTest(unittest.TestCase):
         for row in rows:
             self.assertGreaterEqual(len(row), 4)
             self.assertNotEqual(row[0], 0)
+
+    def test_query_executemany(self):
+        con = attachdb.Connection(host="localhost", user="test", password="test", database="test", port=3306)
+        cursor = con.cursor()
+        cursor.execute("DROP TABLE IF EXISTS dbapi_exec_many")
+        cursor.close()
+        cursor = con.cursor()
+        cursor.execute("CREATE TABLE dbapi_exec_many (a int, b int)")
+        cursor.close()
+        gc.collect()
+        ncon = attachdb.Connection(host="localhost", user="test", password="test", database="test", port=3306)
+        ncursor = ncon.cursor()
+        ncursor.executemany("INSERT INTO dbapi_exec_many VALUES (?,?)", [[1,2], [2,3],[3,4]])
+        ncursor.close()
+        cursor = con.cursor()
+        cursor.execute("SELECT * FROM dbapi_exec_many")
+        row = cursor.fetchone()
+        self.assertEqual([1,2], row)
+        row = cursor.fetchone()
+        self.assertEqual([2,3], row)
+        row = cursor.fetchone()
+        self.assertEqual([3,4], row)
 
     def test_query_fail(self):
         con = attachdb.Connection(host="localhost", user="test", password="test", database="test", port=3306)

@@ -79,6 +79,7 @@ class Connection(object):
             process_exception(e)
 
     def close(self):
+        # TODO: if in query, go to end of results
         del self.con
         self.connected = False
 

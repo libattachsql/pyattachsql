@@ -21,6 +21,7 @@ class Cursor(object):
     rowcount = 0
     description = []
     first_row = True
+    query = None
 
     # TODO: if query hasn't been executed fetch show throw an error
 
@@ -31,27 +32,53 @@ class Cursor(object):
         pass
 
     def close(self):
-        del self.query
+        if self.query:
+            del self.query
+            self.query = None
 
     def __del__(self):
         self.close()
 
-    def execute(self, query, *args):
+    def execute(self, query, parameters=[]):
+        query_args = []
+        for parameter in parameters:
+            if type(parameter) is int or type(parameter) is long:
+                if parameter > 2147483647 or parameter < -2147483648:
+                    query_args.append({'type': attachsql.ESCAPE_TYPE_BIGINT, 'data': parameter})
+                else:
+                    query_args.append({'type': attachsql.ESCAPE_TYPE_INT, 'data': parameter})
+            elif type(parameter) is float:
+                query_args.append({'type': attachsql.ESCAPE_TYPE_DOUBLE, 'data': parameter})
+            elif type(parameter) is None:
+                query_args.append({'type': attachsql.ESCAPE_TYPE_NONE})
+            else:
+                query_args.append({'type': attachsql.ESCAPE_TYPE_CHAR, 'data': parameter})
         try:
-            self.query = self.con.query(query, *args)
+            self.query = self.con.query(query, query_args)
             self.__poll_row_read()
         except Exception as e:
             process_exception(e)
 
     def __poll_row_read(self):
-        ret = 0
-        while ret not in [attachsql.RETURN_EOF, attachsql.RETURN_ROW_READY]:
+        while True:
             ret = self.con.poll()
+            if ret in [attachsql.RETURN_EOF, attachsql.RETURN_ROW_READY]:
+                break
 
         return ret
 
+    def __skip_remaining_rows(self):
+        ret = 0
+        while ret != attachsql.RETURN_EOF:
+            ret = self.con.poll()
+            if ret == attachsql.RETURN_ROW_READY:
+                self.query.row_next()
+
     def executemany(self, operation, sequence):
-        pass
+        #TODO at a later date for INSERT use VALUES as an optimisation
+        for parameters in sequence:
+            self.query = self.execute(operation, parameters)
+            self.__skip_remaining_rows()
 
     def fetchone(self):
         try:
