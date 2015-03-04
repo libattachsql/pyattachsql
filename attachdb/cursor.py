@@ -13,7 +13,7 @@
 # under the License.
 
 import attachsql
-from exceptions import process_exception
+from exceptions import process_exception, OperationalError
 from attachdb.types import Date, Time, Timestamp, DateFromTicks, TimeFromTicks
 from attachdb.types import TimestampFromTicks, Binary, STRING, BINARY, NUMBER
 from attachdb.types import DATETIME, ROWID
@@ -26,8 +26,7 @@ class Cursor(object):
     description = []
     first_row = True
     query = None
-
-    # TODO: if query hasn't been executed fetch show throw an error
+    no_results = False
 
     def __init__(self, con):
         self.con = con.con
@@ -66,7 +65,9 @@ class Cursor(object):
                 query_args.append({'type': attachsql.ESCAPE_TYPE_CHAR, 'data': parameter})
         try:
             self.query = self.con.query(query, query_args)
-            self.__poll_row_read()
+            ret = self.__poll_row_read()
+            if ret == attachsql.RETURN_EOF:
+                self.no_results = True
         except Exception as e:
             process_exception(e)
 
@@ -91,7 +92,15 @@ class Cursor(object):
             self.query = self.execute(operation, parameters)
             self.__skip_remaining_rows()
 
+    def __check_results(self):
+        if self.no_results:
+            raise OperationalError("No results for cursor")
+
+        if self.query is None:
+            raise OperationalError("Cursor has not been executed")
+
     def fetchone(self):
+        self.__check_results()
         try:
             if (not self.first_row):
                 self.query.row_next()
@@ -105,6 +114,7 @@ class Cursor(object):
             process_exception(e)
 
     def fetchmany(self, size=None):
+        self.__check_results()
         ret = []
         if size is None:
             size = self.arraysize
@@ -119,6 +129,7 @@ class Cursor(object):
         return ret
 
     def fetchall(self):
+        self.__check_results()
         ret = []
         while True:
             row = self.fetchone()

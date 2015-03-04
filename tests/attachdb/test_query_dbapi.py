@@ -143,3 +143,16 @@ class QueryTest(unittest.TestCase):
         row = cursor.fetchone()
         self.assertEqual(('2015-03-04 22:55:50',), row)
         cursor.close()
+
+    def test_query_fail_no_results(self):
+        con = attachdb.Connection(host="localhost", user="test", password="test", database="test", port=3306)
+        cursor = con.cursor()
+        cursor.execute("SELECT NULL LIMIT 0,0")
+        with self.assertRaises(attachdb.errors.OperationalError):
+            cursor.fetchone()
+
+    def test_query_fail_no_query(self):
+        con = attachdb.Connection(host="localhost", user="test", password="test", database="test", port=3306)
+        cursor = con.cursor()
+        with self.assertRaises(attachdb.errors.OperationalError):
+            cursor.fetchone()

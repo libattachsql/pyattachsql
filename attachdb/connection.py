@@ -14,9 +14,11 @@
 
 import attachsql
 from cursor import Cursor
-from exceptions import process_exception
+from exceptions import process_exception, OperationalError
 
 class Connection(object):
+    connected = False
+
     def __init__(self, host, port=3306, user='', password='', database='',
                  autocommit=False):
         """
@@ -35,11 +37,10 @@ class Connection(object):
             self.__poll_connect_loop()
         except Exception as e:
             process_exception(e)
+        self.connected = True
         if autocommit is not None:
             self.autocommit(autocommit)
         self.connection_id = self.con.connection_id()
-        # TODO: command when not connected throws exception
-        self.connected = True
 
     def __poll_connect_loop(self):
         ret = 0
@@ -47,6 +48,8 @@ class Connection(object):
             ret = self.con.poll()
 
     def autocommit(self, setting):
+        if not self.connected:
+            raise OperationalError("Not connected to database server")
         try:
             if setting == True:
                 query = self.con.query("SET autocommit = 1")
@@ -65,6 +68,8 @@ class Connection(object):
                 query.row_next()
 
     def commit(self):
+        if not self.connected:
+            raise OperationalError("Not connected to database server")
         try:
             query = self.con.query("COMMIT")
             self.__poll_no_data_loop(query)
@@ -72,6 +77,8 @@ class Connection(object):
             process_exception(e)
 
     def rollback(self):
+        if not self.connected:
+            raise OperationalError("Not connected to database server")
         try:
             query = self.con.query("ROLLBACK")
             self.__poll_no_data_loop(query)
@@ -79,7 +86,6 @@ class Connection(object):
             process_exception(e)
 
     def close(self):
-        # TODO: if in query, go to end of results
         del self.con
         self.connected = False
 
@@ -87,4 +93,6 @@ class Connection(object):
         self.close()
 
     def cursor(self):
+        if not self.connected:
+            raise OperationalError("Not connected to database server")
         return Cursor(self)
