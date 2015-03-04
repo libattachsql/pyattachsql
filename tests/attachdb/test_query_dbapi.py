@@ -104,7 +104,7 @@ class QueryTest(unittest.TestCase):
     def test_query_callproc_noparams(self):
         con = attachdb.Connection(host="localhost", user="test", password="test", database="test", port=3306)
         cursor = con.cursor()
-        cursor.execute("DROP FUNCTION IF EXISTS dbapi_static")
+        cursor.execute("DROP PROCEDURE IF EXISTS dbapi_static")
         cursor.close()
         cursor = con.cursor()
         cursor.execute("CREATE PROCEDURE dbapi_static () BEGIN SELECT 1 as a, 2 as b; END")
@@ -114,3 +114,24 @@ class QueryTest(unittest.TestCase):
         row = cursor.fetchone()
         self.assertEqual(('1', '2'), row)
         cursor.close()
+
+    def test_query_nextset(self):
+        con = attachdb.Connection(host="localhost", user="test", password="test", database="test", port=3306)
+        cursor = con.cursor()
+        cursor.execute("SELECT 1 as a; SELECT 2 as b;")
+        row = cursor.fetchone()
+        self.assertEqual(('1',), row)
+        self.assertTrue(cursor.nextset())
+        row = cursor.fetchone()
+        self.assertEqual(('2',), row)
+        cursor.close()
+
+    def test_query_nextset_fail(self):
+        con = attachdb.Connection(host="localhost", user="test", password="test", database="test", port=3306)
+        cursor = con.cursor()
+        cursor.execute("SELECT 1 as a")
+        row = cursor.fetchone()
+        self.assertEqual(('1',), row)
+        self.assertIsNone(cursor.nextset())
+        cursor.close()
+

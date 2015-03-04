@@ -109,6 +109,7 @@ int _attachsql_ConnectionObject_Initialize(_attachsql_ConnectionObject *self, Py
     _attachsql_Exception(error);
     return -1;
   }
+  attachsql_connect_set_option(self->conn, ATTACHSQL_OPTION_MULTI_STATEMENTS, NULL);
   return 0;
 }
 

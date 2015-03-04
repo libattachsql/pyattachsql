@@ -124,11 +124,23 @@ class Cursor(object):
         return ret
 
     def nextset(self):
-        pass
+        try:
+            self.__skip_remaining_rows()
+            ret = self.query.next_result()
+            if ret == attachsql.RETURN_EOF:
+                return None
+            else:
+                self.first_row = True
+                self.__poll_row_read()
+                return True
+        except Exception as e:
+            process_exception(e)
 
     def setinputsizes(self, sizes):
+        # "Implementations are free to have this method do nothing" - PEP 249
         pass
 
     def setoutputsize(self, size, column=None):
+        # "Implementations are free to have this method do nothing" - PEP 249
         pass
 
