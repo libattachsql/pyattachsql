@@ -135,3 +135,11 @@ class QueryTest(unittest.TestCase):
         self.assertIsNone(cursor.nextset())
         cursor.close()
 
+    def test_query_datetime(self):
+        con = attachdb.Connection(host="localhost", user="test", password="test", database="test", port=3306)
+        ts = attachdb.TimestampFromTicks(1425509750)
+        cursor = con.cursor()
+        cursor.execute("SELECT ? as ts", [ts])
+        row = cursor.fetchone()
+        self.assertEqual(('2015-03-04 22:55:50',), row)
+        cursor.close()

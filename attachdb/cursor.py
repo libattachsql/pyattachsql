@@ -14,6 +14,10 @@
 
 import attachsql
 from exceptions import process_exception
+from attachdb.types import Date, Time, Timestamp, DateFromTicks, TimeFromTicks
+from attachdb.types import TimestampFromTicks, Binary, STRING, BINARY, NUMBER
+from attachdb.types import DATETIME, ROWID
+
 
 class Cursor(object):
 
@@ -47,7 +51,7 @@ class Cursor(object):
     def execute(self, query, parameters=[]):
         query_args = []
         for parameter in parameters:
-            if type(parameter) is int or type(parameter) is long:
+            if type(parameter) is int or type(parameter) is long or type(parameter) is NUMBER:
                 if parameter > 2147483647 or parameter < -2147483648:
                     query_args.append({'type': attachsql.ESCAPE_TYPE_BIGINT, 'data': parameter})
                 else:
@@ -56,6 +60,8 @@ class Cursor(object):
                 query_args.append({'type': attachsql.ESCAPE_TYPE_DOUBLE, 'data': parameter})
             elif type(parameter) is None:
                 query_args.append({'type': attachsql.ESCAPE_TYPE_NONE})
+            elif type(parameter) is DATETIME or type(parameter) is Timestamp or type(parameter) is Date or type(parameter) is Time:
+                query_args.append({'type': attachsql.ESCAPE_TYPE_CHAR, 'data': str(parameter)})
             else:
                 query_args.append({'type': attachsql.ESCAPE_TYPE_CHAR, 'data': parameter})
         try:

@@ -12,18 +12,28 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from attachdb.connection import Connection
-import attachdb.exceptions as errors
-from attachdb.types import Date, Time, Timestamp, DateFromTicks, TimeFromTicks
-from attachdb.types import TimestampFromTicks, Binary, STRING, BINARY, NUMBER
-from attachdb.types import DATETIME, ROWID
+from time import localtime
+from datetime import date, datetime, time
 
-apilevel = "2.0"
+Date = date
+Time = time
+Timestamp = datetime
 
-threadsafety = 1
+def DateFromTicks(ticks):
+    return date.fromtimestamp(ticks)
 
-paramstyle = 'qmark'
+def TimeFromTicks(ticks):
+    ts = localtime(ticks)
+    return time(ts.tm_hour, ts.tm_min, ts.tm_sec)
 
-def connect(**kwargs):
-    return Connection(**kwargs)
+def TimestampFromTicks(ticks):
+    return datetime.fromtimestamp(ticks)
 
+def Binary(string):
+    return str(string)
+
+STRING = str
+BINARY = str
+NUMBER = int
+DATETIME = Timestamp
+ROWID = int
