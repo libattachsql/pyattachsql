@@ -84,4 +84,33 @@ class QueryTest(unittest.TestCase):
         with self.assertRaises(attachdb.errors.OperationalError):
             cursor.execute("SELECT BAD_QUERY")
 
+    def test_query_callproc(self):
+        con = attachdb.Connection(host="localhost", user="test", password="test", database="test", port=3306)
+        cursor = con.cursor()
+        cursor.execute("DROP PROCEDURE IF EXISTS dbapi_multiply")
+        cursor.close()
+        cursor = con.cursor()
+        cursor.execute("CREATE PROCEDURE dbapi_multiply (IN param1 INT, IN param2 INT, OUT param3 INT) BEGIN SET param3 := param1 * param2; END")
+        cursor.close()
+        cursor = con.cursor()
+        cursor.callproc('dbapi_multiply', ('3', '2', '@dbout'))
+        cursor.close()
+        cursor = con.cursor()
+        cursor.execute("SELECT @dbout")
+        row = cursor.fetchone()
+        self.assertEqual(('6',), row)
+        cursor.close()
 
+    def test_query_callproc_noparams(self):
+        con = attachdb.Connection(host="localhost", user="test", password="test", database="test", port=3306)
+        cursor = con.cursor()
+        cursor.execute("DROP FUNCTION IF EXISTS dbapi_static")
+        cursor.close()
+        cursor = con.cursor()
+        cursor.execute("CREATE PROCEDURE dbapi_static () BEGIN SELECT 1 as a, 2 as b; END")
+        cursor.close()
+        cursor = con.cursor()
+        cursor.callproc('dbapi_static')
+        row = cursor.fetchone()
+        self.assertEqual(('1', '2'), row)
+        cursor.close()

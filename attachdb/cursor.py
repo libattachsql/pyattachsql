@@ -28,11 +28,16 @@ class Cursor(object):
     def __init__(self, con):
         self.con = con.con
 
-    def callproc(self, name, *args):
-        pass
+    def callproc(self, name, parameters=None):
+        if parameters is not None:
+            query = "CALL {proc}({params})".format(proc=name, params=','.join(map(str, parameters)))
+        else:
+            query = "CALL {proc}()".format(proc=name)
+        self.execute(query)
 
     def close(self):
         if self.query:
+            self.__skip_remaining_rows()
             del self.query
             self.query = None
 
