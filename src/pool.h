@@ -20,20 +20,20 @@
 #include <Python.h>
 #include "module.h"
 
-int _attachsql_GroupObject_Initialize(_attachsql_GroupObject *self, PyObject *args, PyObject *kwargs);
+int _attachsql_PoolObject_Initialize(_attachsql_PoolObject *self, PyObject *args, PyObject *kwargs);
 
 void _attachsql_callback(attachsql_connect_t *con, attachsql_events_t events, void *context, attachsql_error_t *error);
 
-PyObject *_attachsql_GroupObject_create_connection(_attachsql_GroupObject *self, PyObject *args);
+PyObject *_attachsql_PoolObject_create_connection(_attachsql_PoolObject *self, PyObject *args);
 
-PyObject *_attachsql_GroupObject_run(_attachsql_GroupObject *self, PyObject *unused);
+PyObject *_attachsql_PoolObject_run(_attachsql_PoolObject *self, PyObject *unused);
 
-void _attachsql_GroupObject_dealloc(_attachsql_GroupObject *self);
+void _attachsql_PoolObject_dealloc(_attachsql_PoolObject *self);
 
-int _attachsql_GroupObject_setattr(_attachsql_GroupObject *self, char *name, PyObject *v);
+int _attachsql_PoolObject_setattr(_attachsql_PoolObject *self, char *name, PyObject *v);
 
-PyObject *_attachsql_GroupObject_repr(_attachsql_GroupObject *self);
+PyObject *_attachsql_PoolObject_repr(_attachsql_PoolObject *self);
 
-int _attachsql_GroupObject_traverse(_attachsql_GroupObject *self, visitproc visit, void *arg);
+int _attachsql_PoolObject_traverse(_attachsql_PoolObject *self, visitproc visit, void *arg);
 
-int _attachsql_GroupObject_clear(_attachsql_GroupObject *self);
+int _attachsql_PoolObject_clear(_attachsql_PoolObject *self);

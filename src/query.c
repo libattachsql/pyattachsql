@@ -450,7 +450,7 @@ PyObject *_attachsql_QueryObject_row_get_offset(_attachsql_QueryObject *self, Py
 void _attachsql_QueryObject_dealloc(_attachsql_QueryObject *self)
 {
   PyObject_GC_UnTrack(self);
-  if (!self->pycon->in_group)
+  if (!self->pycon->in_pool)
   {
     attachsql_query_close(self->pycon->conn);
   }
