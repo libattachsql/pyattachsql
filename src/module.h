@@ -18,7 +18,7 @@
 #pragma once
 
 #include <Python.h>
-#include <libattachsql-1.0/attachsql.h>
+#include <libattachsql-2.0/attachsql.h>
 
 #define MAX_OPTION_SIZE 60
 

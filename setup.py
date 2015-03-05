@@ -2,7 +2,7 @@
 
 import os
 import sys
-from setuptools import setup, Extension
+from setuptools import setup, Extension, find_packages
 
 if not hasattr(sys, "hexversion") or sys.hexversion < 0x02040000:
     raise Error("Python 2.4 or newer is required")
@@ -26,5 +26,6 @@ setup(
                     libraries=['attachsql'],
 #                    extra_compile_args=['-fsanitize=address','-O0','-g', '-fno-omit-frame-pointer'],
 #                    extra_link_args=['-fsanitize=address','-O0','-g', '-fno-omit-frame-pointer']
-                )]
+                )],
+    packages=find_packages(exclude=["tests", "*.tests"])
 )

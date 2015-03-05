@@ -109,6 +109,7 @@ int _attachsql_ConnectionObject_Initialize(_attachsql_ConnectionObject *self, Py
     _attachsql_Exception(error);
     return -1;
   }
+  attachsql_connect_set_option(self->conn, ATTACHSQL_OPTION_MULTI_STATEMENTS, NULL);
   return 0;
 }
 
@@ -238,7 +239,7 @@ PyObject *_attachsql_ConnectionObject_query(_attachsql_ConnectionObject *self, P
   }
   query->pycon= self;
   Py_INCREF(self);
-  if (_attachsql_QueryObject_Initialize(query, args, NULL))
+  if (_attachsql_QueryObject_Initialize(query, args, NULL) || PyErr_Occurred())
   {
     Py_XDECREF(query);
     query= NULL;
