@@ -5,8 +5,9 @@ python:
 
 before_install:
     - sudo apt-add-repository ppa:linuxjedi/ppa -y
+    - sudo apt-add-repository ppa:linuxjedi/libattachsql-dev -y
     - sudo apt-get update -qq
-    - sudo apt-get install -y libattachsql1 libattachsql1-dev
+    - sudo apt-get install -y libattachsql2 libattachsql2-dev
     - mysql -uroot -e "create database test;"
     - mysql -uroot -e "grant all on *.* to 'test'@'localhost' identified by 'test';"
 
