@@ -100,7 +100,7 @@ int _attachsql_ConnectionObject_Initialize(_attachsql_ConnectionObject *self, Py
   strncpy(self->user, user, MAX_OPTION_SIZE);
   strncpy(self->pass, pass, MAX_OPTION_SIZE);
   strncpy(self->db, db, MAX_OPTION_SIZE);
-  self->in_group= false;
+  self->in_pool= false;
   self->query= NULL;
 
   self->conn= attachsql_connect_create(self->host, self->port, self->user, self->pass, self->db, &error);
@@ -244,7 +244,7 @@ PyObject *_attachsql_ConnectionObject_query(_attachsql_ConnectionObject *self, P
     Py_XDECREF(query);
     query= NULL;
   }
-  if (self->in_group)
+  if (self->in_pool)
   {
     self->query= (PyObject*)query;
     Py_XINCREF(query);
@@ -255,7 +255,7 @@ PyObject *_attachsql_ConnectionObject_query(_attachsql_ConnectionObject *self, P
 void _attachsql_ConnectionObject_dealloc(_attachsql_ConnectionObject *self)
 {
   PyObject_GC_UnTrack(self);
-  if (!self->in_group)
+  if (!self->in_pool)
   {
     attachsql_connect_destroy(self->conn);
   }

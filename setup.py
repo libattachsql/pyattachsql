@@ -21,7 +21,7 @@ setup(
                              'src/util.c',
                              'src/query.c',
                              'src/statement.c',
-                             'src/group.c'
+                             'src/pool.c'
                             ],
                     libraries=['attachsql'],
 #                    extra_compile_args=['-fsanitize=address','-O0','-g', '-fno-omit-frame-pointer'],

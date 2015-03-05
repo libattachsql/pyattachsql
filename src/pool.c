@@ -15,27 +15,27 @@
  *
  */
 
-#include "group.h"
+#include "pool.h"
 
 extern PyTypeObject _attachsql_QueryObject_Type;
 
-static PyMethodDef _attachsql_GroupObject_methods[]= {
+static PyMethodDef _attachsql_PoolObject_methods[]= {
   {
     "create_connection",
-    (PyCFunction)_attachsql_GroupObject_create_connection,
+    (PyCFunction)_attachsql_PoolObject_create_connection,
     METH_VARARGS,
-    "Create a new connection in the group"
+    "Create a new connection in the pool"
   },
   {
     "run",
-    (PyCFunction)_attachsql_GroupObject_run,
+    (PyCFunction)_attachsql_PoolObject_run,
     METH_NOARGS,
-    "Run a connection group"
+    "Run a connection pool"
   },
   { NULL, NULL }
 };
 
-int _attachsql_GroupObject_Initialize(_attachsql_GroupObject *self, PyObject *args, PyObject *kwargs)
+int _attachsql_PoolObject_Initialize(_attachsql_PoolObject *self, PyObject *args, PyObject *kwargs)
 {
   PyObject *cb_func= NULL;
   PyObject *cb_args= NULL;
@@ -56,7 +56,7 @@ int _attachsql_GroupObject_Initialize(_attachsql_GroupObject *self, PyObject *ar
   }
   self->cb_func= cb_func;
   self->cb_args= cb_args;
-  self->group= attachsql_group_create(&error);
+  self->pool= attachsql_pool_create(&error);
   self->conn_list= PyList_New(0);
   self->context_list= PyList_New(0);
   if (error)
@@ -71,7 +71,7 @@ void _attachsql_callback(attachsql_connect_t *con, attachsql_events_t events, vo
 {
   PyObject *ctext_data= (PyObject*) context;
   _attachsql_ConnectionObject *pycon= (_attachsql_ConnectionObject*) PyTuple_GetItem(ctext_data, 0);
-  _attachsql_GroupObject *self= (_attachsql_GroupObject*) PyTuple_GetItem(ctext_data, 1);
+  _attachsql_PoolObject *self= (_attachsql_PoolObject*) PyTuple_GetItem(ctext_data, 1);
   PyGILState_STATE gstate;
 
   if (self->cb_func)
@@ -98,7 +98,7 @@ void _attachsql_callback(attachsql_connect_t *con, attachsql_events_t events, vo
   }
 }
 
-PyObject *_attachsql_GroupObject_create_connection(_attachsql_GroupObject *self, PyObject *args)
+PyObject *_attachsql_PoolObject_create_connection(_attachsql_PoolObject *self, PyObject *args)
 {
   attachsql_error_t *error= NULL;
   _attachsql_ConnectionObject *con= NULL;
@@ -113,8 +113,8 @@ PyObject *_attachsql_GroupObject_create_connection(_attachsql_GroupObject *self,
   PyTuple_SET_ITEM(context, 0, (PyObject*)con);
   PyTuple_SET_ITEM(context, 1, (PyObject*)self);
   attachsql_connect_set_callback(con->conn, _attachsql_callback, context);
-  attachsql_group_add_connection(self->group, con->conn, &error);
-  con->in_group= true;
+  attachsql_pool_add_connection(self->pool, con->conn, &error);
+  con->in_pool= true;
   PyList_Append(self->context_list, context);
   if (error)
   {
@@ -125,9 +125,9 @@ PyObject *_attachsql_GroupObject_create_connection(_attachsql_GroupObject *self,
   return (PyObject*)con;
 }
 
-PyObject *_attachsql_GroupObject_run(_attachsql_GroupObject *self, PyObject *unused)
+PyObject *_attachsql_PoolObject_run(_attachsql_PoolObject *self, PyObject *unused)
 {
-  attachsql_group_run(self->group);
+  attachsql_pool_run(self->pool);
   if (PyErr_Occurred())
   {
     return NULL;
@@ -135,7 +135,7 @@ PyObject *_attachsql_GroupObject_run(_attachsql_GroupObject *self, PyObject *unu
   Py_RETURN_NONE;
 }
 
-void _attachsql_GroupObject_dealloc(_attachsql_GroupObject *self)
+void _attachsql_PoolObject_dealloc(_attachsql_PoolObject *self)
 {
   ssize_t listsize, listpos;
   PyObject_GC_UnTrack(self);
@@ -152,16 +152,16 @@ void _attachsql_GroupObject_dealloc(_attachsql_GroupObject *self)
     Py_XDECREF(PyList_GetItem(self->conn_list, listpos));
   }
   Py_XDECREF(self->conn_list);
-  attachsql_group_destroy(self->group);
+  attachsql_pool_destroy(self->pool);
   self->ob_type->tp_free(self);
 }
 
-PyObject *_attachsql_GroupObject_getattr(_attachsql_GroupObject *self, char *name)
+PyObject *_attachsql_PoolObject_getattr(_attachsql_PoolObject *self, char *name)
 {
   PyObject *res;
   //struct PyMemberDef *def;
 
-  res= Py_FindMethod(_attachsql_GroupObject_methods, (PyObject *)self, name);
+  res= Py_FindMethod(_attachsql_PoolObject_methods, (PyObject *)self, name);
   if (res != NULL)
   {
     return res;
@@ -170,7 +170,7 @@ PyObject *_attachsql_GroupObject_getattr(_attachsql_GroupObject *self, char *nam
   return NULL;
 }
 
-int _attachsql_GroupObject_setattr(_attachsql_GroupObject *self, char *name, PyObject *v)
+int _attachsql_PoolObject_setattr(_attachsql_PoolObject *self, char *name, PyObject *v)
 {
   //struct PyMemberDef *def;
 
@@ -193,36 +193,36 @@ int _attachsql_GroupObject_setattr(_attachsql_GroupObject *self, char *name, PyO
   return -1;
 }
 
-PyObject *_attachsql_GroupObject_repr(_attachsql_GroupObject *self)
+PyObject *_attachsql_PoolObject_repr(_attachsql_PoolObject *self)
 {
   char buffer[300];
-  snprintf(buffer, 300, "<attachsql.group at %lx>", (long)self);
+  snprintf(buffer, 300, "<attachsql.pool at %lx>", (long)self);
   return PyString_FromString(buffer);
 }
 
 
-int _attachsql_GroupObject_traverse(_attachsql_GroupObject *self, visitproc visit, void *arg)
+int _attachsql_PoolObject_traverse(_attachsql_PoolObject *self, visitproc visit, void *arg)
 {
   return 0;
 }
 
-int _attachsql_GroupObject_clear(_attachsql_GroupObject *self)
+int _attachsql_PoolObject_clear(_attachsql_PoolObject *self)
 {
   return 0;
 }
 
-PyTypeObject _attachsql_GroupObject_Type= {
+PyTypeObject _attachsql_PoolObject_Type= {
   PyObject_HEAD_INIT(NULL)
   0,
-  "attachsql.group",
-  sizeof(_attachsql_GroupObject),
+  "attachsql.pool",
+  sizeof(_attachsql_PoolObject),
   0,
-  (destructor)_attachsql_GroupObject_dealloc,
+  (destructor)_attachsql_PoolObject_dealloc,
   0,
-  (getattrfunc)_attachsql_GroupObject_getattr,
-  (setattrfunc)_attachsql_GroupObject_setattr,
+  (getattrfunc)_attachsql_PoolObject_getattr,
+  (setattrfunc)_attachsql_PoolObject_setattr,
   0,
-  (reprfunc)_attachsql_GroupObject_repr,
+  (reprfunc)_attachsql_PoolObject_repr,
 
   0,
   0,
@@ -237,9 +237,9 @@ PyTypeObject _attachsql_GroupObject_Type= {
   0,
 
   Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE,
-  "Returns a group connection object",
-  (traverseproc)_attachsql_GroupObject_traverse,
-  (inquiry)_attachsql_GroupObject_clear,
+  "Returns a pool connection object",
+  (traverseproc)_attachsql_PoolObject_traverse,
+  (inquiry)_attachsql_PoolObject_clear,
 
   0,
 
@@ -248,7 +248,7 @@ PyTypeObject _attachsql_GroupObject_Type= {
   0,
   0,
 
-  (struct PyMethodDef *)_attachsql_GroupObject_methods,
+  (struct PyMethodDef *)_attachsql_PoolObject_methods,
   0,
 
   0,
@@ -257,7 +257,7 @@ PyTypeObject _attachsql_GroupObject_Type= {
   0,
   0,
   0,
-  (initproc)_attachsql_GroupObject_Initialize,
+  (initproc)_attachsql_PoolObject_Initialize,
   NULL,
   NULL,
   NULL,

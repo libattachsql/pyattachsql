@@ -17,13 +17,13 @@
 
 #include "module.h"
 #include "connection.h"
-#include "group.h"
+#include "pool.h"
 #include <datetime.h>
 
 extern PyTypeObject _attachsql_ConnectionObject_Type;
 extern PyTypeObject _attachsql_StatementObject_Type;
 extern PyTypeObject _attachsql_QueryObject_Type;
-extern PyTypeObject _attachsql_GroupObject_Type;
+extern PyTypeObject _attachsql_PoolObject_Type;
 
 PyObject *_attachsql_Error;
   PyObject *_attachsql_InternalError;
@@ -38,10 +38,10 @@ static PyMethodDef _attachsql_methods[] = {
     "connect to a MySQL server"
   },
   {
-    "group",
-    (PyCFunction)_attachsql_group,
+    "pool",
+    (PyCFunction)_attachsql_pool,
     METH_VARARGS | METH_KEYWORDS,
-    "create a connection group"
+    "create a connection pool"
   },
   {
     "get_library_version",
@@ -103,21 +103,21 @@ PyObject *_attachsql_connect(PyObject *self, PyObject *args, PyObject *kwargs)
   return (PyObject *) con;
 }
 
-PyObject *_attachsql_group(PyObject *self, PyObject *args, PyObject *kwargs)
+PyObject *_attachsql_pool(PyObject *self, PyObject *args, PyObject *kwargs)
 {
-  _attachsql_GroupObject *group= NULL;
+  _attachsql_PoolObject *pool= NULL;
 
-  group= (_attachsql_GroupObject*) _attachsql_GroupObject_Type.tp_alloc(&_attachsql_GroupObject_Type, 0);
-  if (group == NULL)
+  pool= (_attachsql_PoolObject*) _attachsql_PoolObject_Type.tp_alloc(&_attachsql_PoolObject_Type, 0);
+  if (pool == NULL)
   {
     return NULL;
   }
-  if (_attachsql_GroupObject_Initialize(group, args, kwargs))
+  if (_attachsql_PoolObject_Initialize(pool, args, kwargs))
   {
-    Py_DECREF(group);
-    group= NULL;
+    Py_DECREF(pool);
+    pool= NULL;
   }
-  return (PyObject *) group;
+  return (PyObject *) pool;
 }
 
 PyMODINIT_FUNC
@@ -149,10 +149,10 @@ initattachsql(void)
   _attachsql_QueryObject_Type.tp_new= PyType_GenericNew;
   _attachsql_QueryObject_Type.tp_free= PyObject_GC_Del;
 
-  _attachsql_GroupObject_Type.ob_type= &PyType_Type;
-  _attachsql_GroupObject_Type.tp_alloc= PyType_GenericAlloc;
-  _attachsql_GroupObject_Type.tp_new= PyType_GenericNew;
-  _attachsql_GroupObject_Type.tp_free= PyObject_GC_Del;
+  _attachsql_PoolObject_Type.ob_type= &PyType_Type;
+  _attachsql_PoolObject_Type.tp_alloc= PyType_GenericAlloc;
+  _attachsql_PoolObject_Type.tp_new= PyType_GenericNew;
+  _attachsql_PoolObject_Type.tp_free= PyObject_GC_Del;
 
   if (!(dict = PyModule_GetDict(module)))
   {
