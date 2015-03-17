@@ -26,6 +26,16 @@ API Documentation
    api/query
    api/statement
 
+DB API Documentation
+--------------------
+
+.. toctree::
+   :maxdepth: 2
+
+   dbapi/module
+   dbapi/connection
+   dbapi/cursor
+
 Indices and tables
 ==================
 

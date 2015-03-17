@@ -1,5 +1,5 @@
-Module Basics
-=============
+pyAttachSQL Module Basics
+=========================
 
 .. py:module:: attachsql
 
@@ -29,10 +29,6 @@ Return Constants
 .. py:data:: RETURN_NOT_CONNECTED
 
    The client is not yet connected to the server
-
-.. py:data:: RETURN_IDLE
-
-   The connection is idle
 
 .. py:data:: RETURN_PROCESSING
 
