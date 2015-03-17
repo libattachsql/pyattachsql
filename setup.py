@@ -7,7 +7,7 @@ from setuptools import setup, Extension, find_packages
 if not hasattr(sys, "hexversion") or sys.hexversion < 0x02040000:
     raise Error("Python 2.4 or newer is required")
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 setup(
     name="_attachsql",
