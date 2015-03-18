@@ -10,7 +10,7 @@ if not hasattr(sys, "hexversion") or sys.hexversion < 0x02040000:
 __version__ = "0.2.0"
 
 setup(
-    name="_attachsql",
+    name="attachsql",
     description="A Python wrapper for the libAttachSQL connector for MySQL servers",
     version=__version__,
     author="Andrew Hutchings <andrew@linuxjedi.co.uk>",
@@ -27,5 +27,5 @@ setup(
 #                    extra_compile_args=['-fsanitize=address','-O0','-g', '-fno-omit-frame-pointer'],
 #                    extra_link_args=['-fsanitize=address','-O0','-g', '-fno-omit-frame-pointer']
                 )],
-    packages=find_packages(exclude=["tests", "*.tests"])
+    packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"])
 )
